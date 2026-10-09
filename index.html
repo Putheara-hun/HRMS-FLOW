@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HRMS System Map</title>
+<style>
+  :root{
+    --bg:#f6f8fc; --panel:#ffffff; --ink:#16202e; --muted:#5d6e85; --faint:#8798ad;
+    --line:#dde5f0; --line-soft:#eaf0f8; --accent:#3b6fd4; --accent-soft:#e8f0fe;
+    --shadow:0 1px 2px rgba(16,32,56,.05), 0 8px 24px -12px rgba(16,32,56,.18);
+
+    --cmf:#5b6b8c; --cmf-bg:#eef1f7;
+    --hr:#2f6fd0;  --hr-bg:#e7f0fd;
+    --rec:#7a4fd0; --rec-bg:#f0eafc;
+    --att:#0f8a8a; --att-bg:#e2f5f4;
+    --pay:#1f7a4d; --pay-bg:#e3f4ea;
+    --ass:#b4661b; --ass-bg:#fbeedd;
+    --prf:#c0407a; --prf-bg:#fce9f1;
+    --eng:#1b72a8; --eng-bg:#e4f1f9;
+    --lnd:#6a8f16; --lnd-bg:#eff6dd;
+    --sys:#6b7684; --sys-bg:#eef0f3;
+    --warn:#b4451b; --warn-bg:#fbe9e2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0e1420; --panel:#151d2b; --ink:#e6ecf5; --muted:#9fb0c6; --faint:#78889e;
+      --line:#263345; --line-soft:#1d2736; --accent:#6c9bf0; --accent-soft:#1b2940;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+
+      --cmf:#9aa9c6; --cmf-bg:#1e2534;
+      --hr:#74a6f0;  --hr-bg:#16243a;
+      --rec:#b394ef; --rec-bg:#241c3a;
+      --att:#4cc5c0; --att-bg:#112b2c;
+      --pay:#5cc189; --pay-bg:#12271c;
+      --ass:#e0a05c; --ass-bg:#2b1f12;
+      --prf:#ef84b2; --prf-bg:#2d1521;
+      --eng:#5db2e0; --eng-bg:#112533;
+      --lnd:#a7c758; --lnd-bg:#1f2612;
+      --sys:#9aa5b4; --sys-bg:#1c222b;
+      --warn:#e08a5c; --warn-bg:#2d1a12;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1420; --panel:#151d2b; --ink:#e6ecf5; --muted:#9fb0c6; --faint:#78889e;
+    --line:#263345; --line-soft:#1d2736; --accent:#6c9bf0; --accent-soft:#1b2940;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    --cmf:#9aa9c6; --cmf-bg:#1e2534;  --hr:#74a6f0;  --hr-bg:#16243a;
+    --rec:#b394ef; --rec-bg:#241c3a;  --att:#4cc5c0; --att-bg:#112b2c;
+    --pay:#5cc189; --pay-bg:#12271c;  --ass:#e0a05c; --ass-bg:#2b1f12;
+    --prf:#ef84b2; --prf-bg:#2d1521;  --eng:#5db2e0; --eng-bg:#112533;
+    --lnd:#a7c758; --lnd-bg:#1f2612;  --sys:#9aa5b4; --sys-bg:#1c222b;
+    --warn:#e08a5c; --warn-bg:#2d1a12;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:70px}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:0 16px}
+
+  /* ── header ─────────────────────────────────────────── */
+  header{
+    background:linear-gradient(140deg,#1c2e52 0%,#2a4a7f 60%,#2f6fd0 140%);
+    color:#fff; padding:40px 0 34px;
+  }
+  header h1{margin:0 0 6px; font-size:1.85rem; letter-spacing:-.02em; font-weight:700}
+  header p{margin:0; color:#bcd0ee; max-width:70ch}
+  .stats{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px}
+  .stat{
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16);
+    border-radius:10px; padding:9px 14px; min-width:104px;
+  }
+  .stat b{display:block; font-size:1.3rem; line-height:1.2}
+  .stat span{font-size:.72rem; color:#b8cdeb; text-transform:uppercase; letter-spacing:.07em}
+
+  /* ── nav ────────────────────────────────────────────── */
+  nav{
+    position:sticky; top:0; z-index:50; background:var(--panel);
+    border-bottom:1px solid var(--line); box-shadow:0 1px 3px rgba(16,32,56,.06);
+  }
+  nav .wrap{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none}
+  nav .wrap::-webkit-scrollbar{display:none}
+  nav a{
+    color:var(--muted); text-decoration:none; padding:13px 13px; font-size:.83rem;
+    font-weight:600; white-space:nowrap; border-bottom:2px solid transparent;
+  }
+  nav a:hover{color:var(--ink); background:var(--line-soft)}
+
+  /* ── sections ───────────────────────────────────────── */
+  section{padding:46px 0 10px}
+  h2{
+    margin:0 0 6px; font-size:1.28rem; letter-spacing:-.01em;
+    display:flex; align-items:baseline; gap:10px;
+  }
+  h2 .n{
+    font-size:.72rem; font-weight:700; color:var(--accent);
+    background:var(--accent-soft); border-radius:6px; padding:3px 8px; letter-spacing:.05em;
+  }
+  h3{margin:30px 0 10px; font-size:1rem; letter-spacing:-.005em}
+  .lede{color:var(--muted); margin:0 0 22px; max-width:78ch}
+  .panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:22px; box-shadow:var(--shadow); margin-bottom:18px;
+  }
+  .scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  .scroll svg{display:block; min-width:720px; width:100%; height:auto}
+
+  /* ── domain cards ───────────────────────────────────── */
+  .domains{display:grid; grid-template-columns:repeat(auto-fill,minmax(228px,1fr)); gap:12px}
+  .dom{
+    border:1px solid var(--line); border-left:4px solid var(--c); border-radius:11px;
+    padding:13px 15px; background:var(--panel);
+  }
+  .dom .code{
+    font:700 .68rem/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.09em;
+    color:var(--c); background:var(--cbg); border-radius:5px; padding:4px 7px; display:inline-block;
+  }
+  .dom h4{margin:9px 0 4px; font-size:.95rem}
+  .dom p{margin:0; font-size:.8rem; color:var(--muted); line-height:1.5}
+  .dom .tables{
+    margin-top:9px; padding-top:9px; border-top:1px dashed var(--line);
+    font:.72rem/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--faint);
+  }
+
+  /* ── pipeline / steps ───────────────────────────────── */
+  .steps{counter-reset:s; display:grid; gap:10px}
+  .step{
+    display:grid; grid-template-columns:30px 1fr; gap:14px; align-items:start;
+    padding:13px 15px; border:1px solid var(--line); border-radius:11px; background:var(--panel);
+  }
+  .step::before{
+    counter-increment:s; content:counter(s);
+    width:26px; height:26px; border-radius:7px; display:grid; place-items:center;
+    background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:.78rem;
+  }
+  .step b{display:block; font-size:.92rem; margin-bottom:2px}
+  .step p{margin:0; font-size:.83rem; color:var(--muted)}
+  .step code{font-size:.78rem}
+
+  code{
+    font:.82em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:var(--line-soft); border-radius:4px; padding:1.5px 5px; color:var(--ink);
+  }
+
+  /* ── tables ─────────────────────────────────────────── */
+  table{width:100%; border-collapse:collapse; font-size:.85rem}
+  th{
+    text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em;
+    color:var(--faint); padding:9px 11px; border-bottom:1px solid var(--line); font-weight:700;
+  }
+  td{padding:10px 11px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+  tbody tr:last-child td{border-bottom:0}
+  td code{white-space:nowrap}
+
+  .note{
+    border-left:3px solid var(--warn); background:var(--warn-bg);
+    border-radius:0 9px 9px 0; padding:12px 15px; margin:16px 0; font-size:.86rem;
+  }
+  .note b{color:var(--warn)}
+
+  .legend{display:flex; flex-wrap:wrap; gap:14px; margin-top:14px; font-size:.76rem; color:var(--muted)}
+  .legend span{display:inline-flex; align-items:center; gap:6px}
+  .swatch{width:22px; height:3px; border-radius:2px; display:inline-block}
+
+  footer{
+    margin-top:50px; padding:26px 0 44px; border-top:1px solid var(--line);
+    color:var(--faint); font-size:.8rem;
+  }
+
+  /* ── svg shared ─────────────────────────────────────── */
+  svg text{font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif; fill:var(--ink)}
+  svg .t   {font-size:12.5px; font-weight:600}
+  svg .s   {font-size:10.5px; fill:var(--muted); font-weight:400}
+  svg .tiny{font-size:9.5px; fill:var(--faint); font-weight:400}
+  svg .lbl {font-size:9.5px; fill:var(--faint); font-weight:600; letter-spacing:.06em}
+  svg .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; fill:var(--muted)}
+  svg .edge{stroke:var(--line); stroke-width:1.6; fill:none}
+  svg .edge-strong{stroke:var(--accent); stroke-width:2; fill:none}
+  svg .edge-dash{stroke:var(--line); stroke-width:1.5; fill:none; stroke-dasharray:4 4}
+  svg .box{fill:var(--panel); stroke:var(--line); stroke-width:1.5}
+  svg .band{fill:var(--line-soft); stroke:none}
+
+  @media (max-width:640px){
+    header{padding:30px 0 26px}
+    header h1{font-size:1.4rem}
+    .panel{padding:15px}
+    section{padding:34px 0 6px}
+  }
+  @media print{
+    nav{display:none} header{background:#1c2e52 !important; -webkit-print-color-adjust:exact}
+    .panel{break-inside:avoid; box-shadow:none}
+    section{padding:18px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>HRMS — System Map</h1>
+    <p>How the Human Resource Management System fits together: the business flows people
+       actually walk through, and the database relations underneath them. Drawn from the
+       live schema, not from a design document.</p>
+    <p style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap">
+      <a href="flowchart.html" style="color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);
+         border-radius:9px;padding:9px 15px;text-decoration:none;font-size:.86rem;font-weight:600">
+         Process flowcharts →</a>
+      <a href="erd.html" style="color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);
+         border-radius:9px;padding:9px 15px;text-decoration:none;font-size:.86rem;font-weight:600">
+         Entity diagrams →</a>
+      <a href="schema.html" style="color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);
+         border-radius:9px;padding:9px 15px;text-decoration:none;font-size:.86rem;font-weight:600">
+         Field &amp; join reference →</a>
+    </p>
+    <div class="stats">
+      <div class="stat"><b>9</b><span>Business domains</span></div>
+      <div class="stat"><b>200</b><span>Tables</span></div>
+      <div class="stat"><b>506</b><span>Foreign keys</span></div>
+      <div class="stat"><b>976</b><span>Procedures</span></div>
+      <div class="stat"><b>78</b><span>Audit twins</span></div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap">
+    <a href="#domains">Domains</a>
+    <a href="#spine">Hire to Retire</a>
+    <a href="#core">Core relations</a>
+    <a href="#recruit">Recruitment</a>
+    <a href="#attend">Attendance</a>
+    <a href="#payroll">Payroll</a>
+    <a href="#calc">Payroll engine</a>
+    <a href="#approval">Approvals</a>
+    <a href="#support">Supporting</a>
+    <a href="#patterns">Patterns</a>
+    <a href="flowchart.html" style="color:var(--accent);margin-left:auto">Flowcharts →</a>
+    <a href="erd.html" style="color:var(--accent)">Entity diagrams →</a>
+    <a href="mobile.html" style="color:var(--accent)">Mobile app →</a>
+    <a href="components.html" style="color:var(--accent)">UI components →</a>
+    <a href="schema.html" style="color:var(--accent)">Field &amp; join reference →</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="domains">
+  <h2><span class="n">01</span> The nine business domains</h2>
+  <p class="lede">Each domain owns a database schema. Two of them — Company Framework and
+     Human Resource — are the ground everything else stands on: almost every other table
+     carries a company, a branch and an employee.</p>
+
+  <div class="domains">
+    <div class="dom" style="--c:var(--cmf);--cbg:var(--cmf-bg)">
+      <span class="code">CMF</span>
+      <h4>Company Framework</h4>
+      <p>The org chart. Company, branches, and the department → unit tree that every
+         person and record is filed under.</p>
+      <div class="tables">COMPANY_INFO · BRANCH · DEPARTMENT · UNIT · POSITION · DIVISION · SECTION</div>
+    </div>
+
+    <div class="dom" style="--c:var(--hr);--cbg:var(--hr-bg)">
+      <span class="code">HR</span>
+      <h4>Human Resource</h4>
+      <p>The person and their employment. Personal details, the employee record, the
+         contract that sets pay, and the events that end it.</p>
+      <div class="tables">PERSONAL_INFORMATION · EMPLOYEE · CONTRACT · BENEFIT · PROMOTION_DEMOTION · RESIGNATION · BLACKLIST · HOLIDAY</div>
+    </div>
+
+    <div class="dom" style="--c:var(--rec);--cbg:var(--rec-bg)">
+      <span class="code">REC</span>
+      <h4>Recruitment</h4>
+      <p>Everything before someone is an employee: the vacancy, the applicants, the exam
+         they sit and the interview they attend.</p>
+      <div class="tables">JOB_REQUISITION · JOB_DESCRIPTION · CANDIDATE · EXAMINATION · CANDIDATE_EXAM · INTERVIEW</div>
+    </div>
+
+    <div class="dom" style="--c:var(--att);--cbg:var(--att-bg)">
+      <span class="code">ATT</span>
+      <h4>Time &amp; Attendance</h4>
+      <p>Rosters, raw clock scans, and the daily attendance rows worked out from them —
+         plus every kind of request that changes a day.</p>
+      <div class="tables">WORKINGTIME · WEEKLY_WORKINGTIME · CLOCK_LOG · ATTENDANCE · LEAVE_REQUEST · WORKINGREQUEST · LATEARLYREQUEST · ANNUAL_LEAVE</div>
+    </div>
+
+    <div class="dom" style="--c:var(--pay);--cbg:var(--pay-bg)">
+      <span class="code">PAY</span>
+      <h4>Payroll</h4>
+      <p>The monthly run and everything that feeds it: rules, tax bands, NSSF bands,
+         advances, exchange rates and seniority.</p>
+      <div class="tables">PAYROLL_RUN · PAYROLL_RUN_EMP · PAYROLL_RUN_DTL · PAYROLL_RULE · TAX_SETTING · NSSF_* · PAYROLL_ADJUSTMENT · EXCHANGE_RATE</div>
+    </div>
+
+    <div class="dom" style="--c:var(--ass);--cbg:var(--ass-bg)">
+      <span class="code">ASS</span>
+      <h4>Asset</h4>
+      <p>Company property through its life: requested, assigned to a person, returned.</p>
+      <div class="tables">ASSET · ASSET_REQUEST · ASSET_ASSIGNMENT · ASSET_RETURN</div>
+    </div>
+
+    <div class="dom" style="--c:var(--prf);--cbg:var(--prf-bg)">
+      <span class="code">PRF</span>
+      <h4>Performance</h4>
+      <p>Appraisals, the monthly comment a manager leaves, and task tracking.</p>
+      <div class="tables">APPRAISAL · MONTHLY_COMMENT · TASK · TASK_DTL</div>
+    </div>
+
+    <div class="dom" style="--c:var(--eng);--cbg:var(--eng-bg)">
+      <span class="code">ENG</span>
+      <h4>Engagement</h4>
+      <p>Talking to staff: announcements, surveys, recognition — and the questionnaire
+         bank that both surveys and recruitment exams draw from.</p>
+      <div class="tables">ANNOUNCEMENT · SURVEY · RECOGNITION · QUESTIONNAIRE · QUESTIONNAIRE_DTL</div>
+    </div>
+
+    <div class="dom" style="--c:var(--lnd);--cbg:var(--lnd-bg)">
+      <span class="code">LND</span>
+      <h4>Learning &amp; Development</h4>
+      <p>Courses on offer, who is enrolled on them, and the certificates people hold.</p>
+      <div class="tables">COURSE · ENROLLMENT · CERTIFICATION</div>
+    </div>
+
+    <div class="dom" style="--c:var(--sys);--cbg:var(--sys-bg)">
+      <span class="code">USP · DSP · SYSUP · ACC</span>
+      <h4>Platform</h4>
+      <p>Not HR at all, but everything leans on it: users and permissions, the parameter
+         and data lists that fill every droplist, screen captions, and currency.</p>
+      <div class="tables">USRAC · PERMISSION · PARAMET_LIST · DATA_LIST · SYSLANGUAGE · SEQUENCEMG</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="spine">
+  <h2><span class="n">02</span> Hire to retire — the spine</h2>
+  <p class="lede">One person moves left to right through the whole system. The arrows below
+     are real foreign keys: a candidate record is <em>carried forward</em> into the personal
+     record, which is carried into the employee record. Nothing is re-typed.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 1120 330" role="img" aria-label="Hire to retire flow from job requisition through to resignation">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+        <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+        </marker>
+      </defs>
+
+      <!-- phase bands -->
+      <rect class="band" x="10"  y="10" width="330" height="44" rx="9"/>
+      <rect class="band" x="352" y="10" width="330" height="44" rx="9"/>
+      <rect class="band" x="694" y="10" width="416" height="44" rx="9"/>
+      <text class="lbl" x="175" y="37" text-anchor="middle" style="fill:var(--rec)">RECRUITMENT  ·  REC</text>
+      <text class="lbl" x="517" y="37" text-anchor="middle" style="fill:var(--hr)">ONBOARDING  ·  HR</text>
+      <text class="lbl" x="902" y="37" text-anchor="middle" style="fill:var(--pay)">WORKING LIFE  ·  ATT · PAY · PRF · LND · ASS</text>
+
+      <!-- row 1 -->
+      <g>
+        <rect class="box" x="18"  y="78" width="140" height="54" rx="9" style="stroke:var(--rec)"/>
+        <text class="t" x="88" y="100" text-anchor="middle">Job Requisition</text>
+        <text class="mono" x="88" y="117" text-anchor="middle">JOB_REQUISITION</text>
+
+        <rect class="box" x="196" y="78" width="130" height="54" rx="9" style="stroke:var(--rec)"/>
+        <text class="t" x="261" y="100" text-anchor="middle">Candidate</text>
+        <text class="mono" x="261" y="117" text-anchor="middle">CANDIDATE</text>
+
+        <rect class="box" x="364" y="78" width="138" height="54" rx="9" style="stroke:var(--hr)"/>
+        <text class="t" x="433" y="100" text-anchor="middle">Personal Info</text>
+        <text class="mono" x="433" y="117" text-anchor="middle">PERSONAL_INFORMATION</text>
+
+        <rect class="box" x="540" y="78" width="124" height="54" rx="9" style="stroke:var(--hr)"/>
+        <text class="t" x="602" y="100" text-anchor="middle">Employee</text>
+        <text class="mono" x="602" y="117" text-anchor="middle">EMPLOYEE</text>
+
+        <rect class="box" x="702" y="78" width="124" height="54" rx="9" style="stroke:var(--hr)"/>
+        <text class="t" x="764" y="100" text-anchor="middle">Contract</text>
+        <text class="mono" x="764" y="117" text-anchor="middle">CONTRACT</text>
+
+        <rect class="box" x="864" y="78" width="124" height="54" rx="9" style="stroke:var(--pay)"/>
+        <text class="t" x="926" y="100" text-anchor="middle">Payroll</text>
+        <text class="mono" x="926" y="117" text-anchor="middle">PAYROLL_RUN_EMP</text>
+
+        <rect class="box" x="1000" y="78" width="104" height="54" rx="9" style="stroke:var(--warn)"/>
+        <text class="t" x="1052" y="100" text-anchor="middle">Resignation</text>
+        <text class="mono" x="1052" y="117" text-anchor="middle">RESIGNATION</text>
+      </g>
+
+      <!-- arrows -->
+      <path class="edge-strong" d="M158,105 H190" marker-end="url(#arA)"/>
+      <path class="edge-strong" d="M326,105 H358" marker-end="url(#arA)"/>
+      <path class="edge-strong" d="M502,105 H534" marker-end="url(#arA)"/>
+      <path class="edge-strong" d="M664,105 H696" marker-end="url(#arA)"/>
+      <path class="edge-strong" d="M826,105 H858" marker-end="url(#arA)"/>
+      <path class="edge" d="M988,105 H996" marker-end="url(#ar)"/>
+
+      <text class="tiny" x="174" y="98" text-anchor="middle">applies</text>
+      <text class="tiny" x="342" y="98" text-anchor="middle">hired</text>
+      <text class="tiny" x="518" y="98" text-anchor="middle">becomes</text>
+      <text class="tiny" x="680" y="98" text-anchor="middle">signs</text>
+      <text class="tiny" x="842" y="98" text-anchor="middle">paid by</text>
+
+      <!-- row 2 : the recruitment sub-steps -->
+      <path class="edge-dash" d="M261,132 V168"/>
+      <rect class="box" x="178" y="168" width="78" height="44" rx="8" style="stroke:var(--rec)"/>
+      <text class="s" x="217" y="188" text-anchor="middle">Exam</text>
+      <text class="tiny" x="217" y="202" text-anchor="middle">EXAMINATION</text>
+
+      <rect class="box" x="268" y="168" width="82" height="44" rx="8" style="stroke:var(--rec)"/>
+      <text class="s" x="309" y="188" text-anchor="middle">Interview</text>
+      <text class="tiny" x="309" y="202" text-anchor="middle">INTERVIEW</text>
+
+      <path class="edge" d="M256,190 H264" marker-end="url(#ar)"/>
+
+      <!-- question bank feeds the exam -->
+      <rect class="box" x="30" y="168" width="124" height="44" rx="8" style="stroke:var(--eng)"/>
+      <text class="s" x="92" y="188" text-anchor="middle">Question bank</text>
+      <text class="tiny" x="92" y="202" text-anchor="middle">ENG.QUESTIONNAIRE</text>
+      <path class="edge-dash" d="M154,190 H172" marker-end="url(#ar)"/>
+
+      <!-- row 3: things hanging off the employee -->
+      <path class="edge-dash" d="M602,132 V246"/>
+      <path class="edge-dash" d="M602,246 H176"/>
+      <path class="edge-dash" d="M602,246 H1052"/>
+      <path class="edge-dash" d="M1052,246 V218"/>
+
+      <g>
+        <rect class="box" x="118" y="252" width="116" height="42" rx="8" style="stroke:var(--att)"/>
+        <text class="s" x="176" y="272" text-anchor="middle">Attendance</text>
+        <text class="tiny" x="176" y="285" text-anchor="middle">ATT.ATTENDANCE</text>
+        <path class="edge-dash" d="M176,246 V252"/>
+
+        <rect class="box" x="252" y="252" width="116" height="42" rx="8" style="stroke:var(--prf)"/>
+        <text class="s" x="310" y="272" text-anchor="middle">Appraisal</text>
+        <text class="tiny" x="310" y="285" text-anchor="middle">PRF.APPRAISAL</text>
+        <path class="edge-dash" d="M310,246 V252"/>
+
+        <rect class="box" x="386" y="252" width="116" height="42" rx="8" style="stroke:var(--lnd)"/>
+        <text class="s" x="444" y="272" text-anchor="middle">Training</text>
+        <text class="tiny" x="444" y="285" text-anchor="middle">LND.ENROLLMENT</text>
+        <path class="edge-dash" d="M444,246 V252"/>
+
+        <rect class="box" x="520" y="252" width="116" height="42" rx="8" style="stroke:var(--ass)"/>
+        <text class="s" x="578" y="272" text-anchor="middle">Assets held</text>
+        <text class="tiny" x="578" y="285" text-anchor="middle">ASS.ASSET_ASSIGNMENT</text>
+        <path class="edge-dash" d="M578,246 V252"/>
+
+        <rect class="box" x="654" y="252" width="116" height="42" rx="8" style="stroke:var(--eng)"/>
+        <text class="s" x="712" y="272" text-anchor="middle">Recognition</text>
+        <text class="tiny" x="712" y="285" text-anchor="middle">ENG.RECOGNITION</text>
+        <path class="edge-dash" d="M712,246 V252"/>
+
+        <rect class="box" x="788" y="252" width="128" height="42" rx="8" style="stroke:var(--hr)"/>
+        <text class="s" x="852" y="272" text-anchor="middle">Promotion</text>
+        <text class="tiny" x="852" y="285" text-anchor="middle">HR.PROMOTION_DEMOTION</text>
+        <path class="edge-dash" d="M852,246 V252"/>
+      </g>
+
+      <text class="tiny" x="602" y="240" text-anchor="middle">everything below hangs off one EMP_ID</text>
+    </svg>
+
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--accent)"></i> carried forward by foreign key</span>
+      <span><i class="swatch" style="background:var(--line); height:0; border-top:2px dashed var(--faint)"></i> references the employee</span>
+    </div>
+  </div>
+
+  <h3>Candidate status, as the data actually records it</h3>
+  <div class="panel scroll">
+    <svg viewBox="0 0 980 96" role="img" aria-label="Candidate status progression">
+      <defs>
+        <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+      </defs>
+      <g>
+        <rect class="box" x="10"  y="26" width="130" height="40" rx="20" style="stroke:var(--rec)"/><text class="t" x="75"  y="51" text-anchor="middle">APPLIED</text>
+        <rect class="box" x="186" y="26" width="140" height="40" rx="20" style="stroke:var(--rec)"/><text class="t" x="256" y="51" text-anchor="middle">SCREENING</text>
+        <rect class="box" x="372" y="26" width="140" height="40" rx="20" style="stroke:var(--rec)"/><text class="t" x="442" y="51" text-anchor="middle">INTERVIEW</text>
+        <rect class="box" x="558" y="26" width="130" height="40" rx="20" style="stroke:var(--rec)"/><text class="t" x="623" y="51" text-anchor="middle">OFFER</text>
+        <rect class="box" x="734" y="26" width="130" height="40" rx="20" style="stroke:var(--pay);fill:var(--pay-bg)"/><text class="t" x="799" y="51" text-anchor="middle">HIRED</text>
+        <rect class="box" x="880" y="26" width="92"  height="40" rx="20" style="stroke:var(--warn);fill:var(--warn-bg)"/><text class="t" x="926" y="51" text-anchor="middle">REJECTED</text>
+      </g>
+      <path class="edge" d="M140,46 H180" marker-end="url(#ar2)"/>
+      <path class="edge" d="M326,46 H366" marker-end="url(#ar2)"/>
+      <path class="edge" d="M512,46 H552" marker-end="url(#ar2)"/>
+      <path class="edge" d="M688,46 H728" marker-end="url(#ar2)"/>
+      <path class="edge-dash" d="M256,66 C256,88 926,92 926,70" marker-end="url(#ar2)"/>
+      <text class="tiny" x="590" y="90" text-anchor="middle">a candidate can be rejected at any stage</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="core">
+  <h2><span class="n">03</span> Core relations — company, people, contract</h2>
+  <p class="lede">This is the part of the schema everything else joins to. Read it once and
+     most of the other diagrams explain themselves.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 1060 440" role="img" aria-label="Entity relations between company framework, personal information, employee and contract">
+      <defs>
+        <marker id="arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+      </defs>
+
+      <!-- CMF column -->
+      <text class="lbl" x="22" y="26" style="fill:var(--cmf)">CMF — COMPANY FRAMEWORK</text>
+      <rect class="box" x="18" y="40" width="190" height="52" rx="9" style="stroke:var(--cmf)"/>
+      <text class="t" x="34" y="62">COMPANY_INFO</text><text class="mono" x="34" y="79">CMI_ID · pk</text>
+
+      <rect class="box" x="18" y="108" width="190" height="52" rx="9" style="stroke:var(--cmf)"/>
+      <text class="t" x="34" y="130">BRANCH</text><text class="mono" x="34" y="147">BR_ID · CMI_ID</text>
+
+      <rect class="box" x="18" y="176" width="190" height="52" rx="9" style="stroke:var(--cmf)"/>
+      <text class="t" x="34" y="198">DEPARTMENT</text><text class="mono" x="34" y="215">DEP_ID · CMI_ID</text>
+
+      <rect class="box" x="18" y="244" width="190" height="52" rx="9" style="stroke:var(--cmf)"/>
+      <text class="t" x="34" y="266">UNIT</text><text class="mono" x="34" y="283">UNT_ID · DEP_ID</text>
+
+      <rect class="box" x="18" y="312" width="190" height="52" rx="9" style="stroke:var(--cmf)"/>
+      <text class="t" x="34" y="334">POSITION</text><text class="mono" x="34" y="351">POS_ID · CMI_ID</text>
+
+      <path class="edge" d="M113,92 V108" marker-end="url(#arc)"/>
+      <path class="edge" d="M113,228 V244" marker-end="url(#arc)"/>
+
+      <!-- HR column -->
+      <text class="lbl" x="300" y="26" style="fill:var(--hr)">HR — PEOPLE</text>
+
+      <rect class="box" x="296" y="40" width="210" height="62" rx="9" style="stroke:var(--hr)"/>
+      <text class="t" x="312" y="62">PERSONAL_INFORMATION</text>
+      <text class="mono" x="312" y="79">PSI_ID · CDD_ID · 44 cols</text>
+      <text class="tiny" x="312" y="94">name, DOB, photo, marital status</text>
+
+      <rect class="box" x="296" y="128" width="210" height="62" rx="9" style="stroke:var(--hr)"/>
+      <text class="t" x="312" y="150">PERSONAL_FAMILY</text>
+      <text class="mono" x="312" y="167">PSI_ID</text>
+      <text class="tiny" x="312" y="182">spouse and children → tax relief</text>
+
+      <rect class="box" x="296" y="216" width="210" height="72" rx="9" style="stroke:var(--hr);stroke-width:2.4"/>
+      <text class="t" x="312" y="238">EMPLOYEE</text>
+      <text class="mono" x="312" y="255">EMP_ID · PSI_ID · BR_ID</text>
+      <text class="mono" x="312" y="270">DEP_ID · UNT_ID · POS_ID</text>
+      <text class="tiny" x="312" y="284">the id every other domain joins on</text>
+
+      <rect class="box" x="296" y="314" width="210" height="62" rx="9" style="stroke:var(--hr)"/>
+      <text class="t" x="312" y="336">CONTRACT</text>
+      <text class="mono" x="312" y="353">CTR_ID · EMP_ID · POS_ID</text>
+      <text class="tiny" x="312" y="368">BASE_SALARY · CCY · PAY_METHOD</text>
+
+      <path class="edge" d="M401,102 V128" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M401,190 V216" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M401,288 V314" marker-end="url(#arc)"/>
+
+      <!-- CMF → EMPLOYEE fan -->
+      <path class="edge-dash" d="M208,134 C250,140 254,230 290,240" marker-end="url(#arc)"/>
+      <path class="edge-dash" d="M208,202 C248,208 254,240 290,248" marker-end="url(#arc)"/>
+      <path class="edge-dash" d="M208,270 C248,268 258,258 290,256" marker-end="url(#arc)"/>
+      <path class="edge-dash" d="M208,338 C248,330 258,276 290,264" marker-end="url(#arc)"/>
+
+      <!-- REC origin -->
+      <rect class="box" x="296" y="398" width="210" height="34" rx="9" style="stroke:var(--rec);stroke-dasharray:5 4"/>
+      <text class="s" x="312" y="419">REC.CANDIDATE — where a person starts</text>
+      <path class="edge-dash" d="M506,415 C560,415 560,80 510,74" marker-end="url(#arc)"/>
+
+      <!-- right column: what hangs off EMPLOYEE -->
+      <text class="lbl" x="606" y="26" style="fill:var(--muted)">EVERY DOMAIN JOINS HERE</text>
+
+      <g>
+        <rect class="box" x="602" y="40"  width="200" height="38" rx="8" style="stroke:var(--att)"/>
+        <text class="s" x="616" y="64">ATT.ATTENDANCE · CLOCK_LOG</text>
+
+        <rect class="box" x="602" y="88"  width="200" height="38" rx="8" style="stroke:var(--att)"/>
+        <text class="s" x="616" y="112">ATT.LEAVE_REQUEST · ANNUAL_LEAVE</text>
+
+        <rect class="box" x="602" y="136" width="200" height="38" rx="8" style="stroke:var(--pay)"/>
+        <text class="s" x="616" y="160">PAY.PAYROLL_RUN_EMP</text>
+
+        <rect class="box" x="602" y="184" width="200" height="38" rx="8" style="stroke:var(--ass)"/>
+        <text class="s" x="616" y="208">ASS.ASSET_ASSIGNMENT</text>
+
+        <rect class="box" x="602" y="232" width="200" height="38" rx="8" style="stroke:var(--prf)"/>
+        <text class="s" x="616" y="256">PRF.APPRAISAL · MONTHLY_COMMENT</text>
+
+        <rect class="box" x="602" y="280" width="200" height="38" rx="8" style="stroke:var(--lnd)"/>
+        <text class="s" x="616" y="304">LND.ENROLLMENT · CERTIFICATION</text>
+
+        <rect class="box" x="602" y="328" width="200" height="38" rx="8" style="stroke:var(--eng)"/>
+        <text class="s" x="616" y="352">ENG.RECOGNITION · ANNOUNCEMENT</text>
+
+        <rect class="box" x="602" y="376" width="200" height="38" rx="8" style="stroke:var(--warn)"/>
+        <text class="s" x="616" y="400">HR.RESIGNATION · BLACKLIST</text>
+      </g>
+
+      <path class="edge-strong" d="M506,250 C548,250 552,60 596,60"   marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M506,250 C548,250 552,108 596,108" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M506,250 C548,250 552,156 596,156" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M506,250 C548,250 552,204 596,204" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M506,252 C548,252 552,252 596,252" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M506,254 C548,254 552,300 596,300" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M506,254 C548,254 552,348 596,348" marker-end="url(#arc)"/>
+      <path class="edge-strong" d="M506,254 C548,254 552,396 596,396" marker-end="url(#arc)"/>
+
+      <!-- note -->
+      <rect x="840" y="40" width="200" height="130" rx="9" style="fill:var(--accent-soft);stroke:none"/>
+      <text class="s" x="856" y="64" style="font-weight:700;fill:var(--accent)">Read this way</text>
+      <text class="tiny" x="856" y="84">An arrow points from the</text>
+      <text class="tiny" x="856" y="98">child to the parent it</text>
+      <text class="tiny" x="856" y="112">depends on. EMPLOYEE is</text>
+      <text class="tiny" x="856" y="126">the hub — 40+ tables hold</text>
+      <text class="tiny" x="856" y="140">an EMP_ID, which is why</text>
+      <text class="tiny" x="856" y="154">deleting a person is never</text>
+      <text class="tiny" x="856" y="168">a real delete.</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="recruit">
+  <h2><span class="n">04</span> Recruitment</h2>
+  <p class="lede">A vacancy is raised, applicants attach to it, each sits an exam built from
+     the shared question bank, and the interview result decides the offer.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 1020 320" role="img" aria-label="Recruitment entity relations">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+      </defs>
+
+      <rect class="box" x="18" y="40" width="186" height="62" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="34" y="62">JOB_REQUISITION</text>
+      <text class="mono" x="34" y="79">JRQ_ID · POS_ID · DEP_ID</text>
+      <text class="tiny" x="34" y="94">the approved vacancy, 46 columns</text>
+
+      <rect class="box" x="18" y="140" width="186" height="56" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="34" y="162">JOB_DESCRIPTION</text>
+      <text class="mono" x="34" y="179">JBD_ID · POS_ID</text>
+
+      <rect class="box" x="18" y="234" width="186" height="56" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="34" y="256">JOB_REQUISITION_BENEFIT</text>
+      <text class="mono" x="34" y="273">JRQ_ID</text>
+      <path class="edge" d="M111,234 V196" marker-end="url(#arr)"/>
+      <path class="edge" d="M111,140 V102" marker-end="url(#arr)"/>
+
+      <rect class="box" x="274" y="40" width="176" height="62" rx="9" style="stroke:var(--rec);stroke-width:2.4"/>
+      <text class="t" x="290" y="62">CANDIDATE</text>
+      <text class="mono" x="290" y="79">CDD_ID · JRQ_ID</text>
+      <text class="tiny" x="290" y="94">APPLIED → … → HIRED</text>
+      <path class="edge" d="M274,71 H210" marker-end="url(#arr)"/>
+
+      <rect class="box" x="274" y="140" width="176" height="56" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="290" y="162">CANDIDATE_EXAM</text>
+      <text class="mono" x="290" y="179">CDD_ID · EXM_ID</text>
+      <path class="edge" d="M362,140 V102" marker-end="url(#arr)"/>
+
+      <rect class="box" x="274" y="234" width="176" height="56" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="290" y="256">CANDIDATE_ANSWER</text>
+      <text class="mono" x="290" y="273">CDD_ID · EXMD_ID</text>
+      <path class="edge" d="M362,234 V196" marker-end="url(#arr)"/>
+
+      <rect class="box" x="520" y="140" width="176" height="56" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="536" y="162">EXAMINATION</text>
+      <text class="mono" x="536" y="179">EXM_ID · JRQ_ID</text>
+      <path class="edge" d="M520,168 H456" marker-end="url(#arr)"/>
+      <path class="edge" d="M608,140 C608,110 470,96 456,88" marker-end="url(#arr)"/>
+
+      <rect class="box" x="520" y="234" width="176" height="56" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="536" y="256">EXAMINATION_DTL</text>
+      <text class="mono" x="536" y="273">EXM_ID · Q_ID · Q_NO</text>
+      <path class="edge" d="M608,234 V196" marker-end="url(#arr)"/>
+      <path class="edge" d="M520,262 H456" marker-end="url(#arr)"/>
+
+      <rect class="box" x="520" y="40" width="176" height="62" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="536" y="62">INTERVIEW</text>
+      <text class="mono" x="536" y="79">ITV_ID · CDD_ID · EMP_ID</text>
+      <text class="tiny" x="536" y="94">panel members are employees</text>
+      <path class="edge" d="M520,71 H456" marker-end="url(#arr)"/>
+
+      <rect class="box" x="766" y="40" width="186" height="62" rx="9" style="stroke:var(--rec)"/>
+      <text class="t" x="782" y="62">INTERVIEW_EXAM_RESULT</text>
+      <text class="mono" x="782" y="79">ITV_ID · EXM_ID · CDD_ID</text>
+      <text class="tiny" x="782" y="94">scores both sides together</text>
+      <path class="edge" d="M766,71 H702" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M859,102 C859,130 702,150 696,162" marker-end="url(#arr)"/>
+
+      <rect class="box" x="766" y="234" width="186" height="56" rx="9" style="stroke:var(--eng)"/>
+      <text class="t" x="782" y="256">ENG.QUESTIONNAIRE_DTL</text>
+      <text class="mono" x="782" y="273">Q_ID · Q_NO — shared bank</text>
+      <path class="edge-strong" d="M766,262 H702" marker-end="url(#arr)"/>
+    </svg>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--accent)"></i> the question bank is shared with Engagement surveys</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Worth knowing.</b> <code>ENG.QUESTIONNAIRE</code> serves two masters. Rows typed
+    <code>EXAM</code> feed recruitment examinations; rows typed <code>SURVEY</code> feed
+    engagement surveys. They share one table and one editor, and each side filters to its
+    own type — which is why the two have separate question-pool procedures.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="attend">
+  <h2><span class="n">05</span> Time &amp; attendance</h2>
+  <p class="lede">Raw scans go in at one end and a judged day comes out at the other. Four
+     different kinds of request can change what a day means after the fact.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 1060 390" role="img" aria-label="Attendance data flow from roster and scans to the daily attendance row">
+      <defs>
+        <marker id="arat" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+        <marker id="aratA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--att)"/>
+        </marker>
+      </defs>
+
+      <text class="lbl" x="22"  y="24" style="fill:var(--att)">WHAT WAS EXPECTED</text>
+      <text class="lbl" x="404" y="24" style="fill:var(--att)">WHAT HAPPENED</text>
+      <text class="lbl" x="778" y="24" style="fill:var(--att)">WHAT IT MEANS</text>
+
+      <!-- expected -->
+      <rect class="box" x="18" y="40" width="200" height="56" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="34" y="62">WORKINGTIME</text>
+      <text class="tiny" x="34" y="79">shift — in, out, break, grace</text>
+
+      <rect class="box" x="18" y="112" width="200" height="56" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="34" y="134">WEEKLY_WORKINGTIME</text>
+      <text class="tiny" x="34" y="151">which shift on which weekday</text>
+
+      <rect class="box" x="18" y="184" width="200" height="56" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="34" y="206">EMPLOYEE_WORKINGTIME</text>
+      <text class="tiny" x="34" y="223">this person's roster, dated</text>
+
+      <rect class="box" x="18" y="256" width="200" height="56" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="34" y="278">EMPLOYEE_DAYOFF</text>
+      <text class="tiny" x="34" y="295">their weekly rest days</text>
+
+      <rect class="box" x="18" y="328" width="200" height="50" rx="9" style="stroke:var(--hr)"/>
+      <text class="t" x="34" y="350">HR.HOLIDAY</text>
+      <text class="tiny" x="34" y="366">public holidays</text>
+
+      <path class="edge" d="M118,96 V112"  marker-end="url(#arat)"/>
+      <path class="edge" d="M118,168 V184" marker-end="url(#arat)"/>
+
+      <!-- happened -->
+      <rect class="box" x="400" y="40" width="200" height="56" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="416" y="62">CLOCK_LOG</text>
+      <text class="tiny" x="416" y="79">raw scans, IN = 0 / OUT = 1</text>
+
+      <rect class="box" x="400" y="112" width="200" height="56" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="416" y="134">CLOCK_LOG_APPEND</text>
+      <text class="tiny" x="416" y="151">scans added by hand, approved</text>
+      <path class="edge" d="M500,112 V96" marker-end="url(#arat)"/>
+
+      <rect class="box" x="400" y="190" width="200" height="50" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="416" y="212">LEAVE_REQUEST</text>
+      <text class="tiny" x="416" y="228">approved absence</text>
+
+      <rect class="box" x="400" y="252" width="200" height="50" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="416" y="274">WORKINGREQUEST</text>
+      <text class="tiny" x="416" y="290">overtime / work on a day off</text>
+
+      <rect class="box" x="400" y="314" width="200" height="50" rx="9" style="stroke:var(--att)"/>
+      <text class="t" x="416" y="336">LATEARLYREQUEST</text>
+      <text class="tiny" x="416" y="352">excused late or early leaving</text>
+
+      <!-- engine -->
+      <rect x="648" y="150" width="96" height="96" rx="48" style="fill:var(--att-bg);stroke:var(--att);stroke-width:2"/>
+      <text class="t" x="696" y="190" text-anchor="middle" style="fill:var(--att)">SP_</text>
+      <text class="t" x="696" y="206" text-anchor="middle" style="fill:var(--att)">ATTENDANCE</text>
+      <text class="t" x="696" y="222" text-anchor="middle" style="fill:var(--att)">_CAL</text>
+
+      <path class="edge-strong" d="M218,212 C400,212 520,196 644,194" marker-end="url(#aratA)" style="stroke:var(--att)"/>
+      <path class="edge-strong" d="M600,68  C624,68  630,160 646,172" marker-end="url(#aratA)" style="stroke:var(--att)"/>
+      <path class="edge-strong" d="M600,215 C620,215 628,200 644,200" marker-end="url(#aratA)" style="stroke:var(--att)"/>
+      <path class="edge-strong" d="M600,277 C620,277 630,230 646,222" marker-end="url(#aratA)" style="stroke:var(--att)"/>
+      <path class="edge-strong" d="M600,339 C624,339 634,244 648,234" marker-end="url(#aratA)" style="stroke:var(--att)"/>
+      <path class="edge-strong" d="M218,353 C300,353 560,300 650,240" marker-end="url(#aratA)" style="stroke:var(--att)"/>
+
+      <!-- result -->
+      <rect class="box" x="790" y="128" width="250" height="140" rx="10" style="stroke:var(--att);stroke-width:2.4"/>
+      <text class="t" x="808" y="152">ATT.ATTENDANCE</text>
+      <text class="tiny" x="808" y="169">one row per employee per day</text>
+      <line x1="808" y1="180" x2="1022" y2="180" style="stroke:var(--line)"/>
+      <text class="mono" x="808" y="198">ATT_DATE · WT_ID · ATT_STS</text>
+      <text class="mono" x="808" y="214">LATE_M · EARLY_M · OT_H</text>
+      <text class="mono" x="808" y="230">ABSENT · LEAVE · PH · DAYOFF</text>
+      <text class="tiny" x="808" y="252">this is the only thing payroll reads</text>
+      <path class="edge-strong" d="M744,198 H786" marker-end="url(#aratA)" style="stroke:var(--att)"/>
+    </svg>
+  </div>
+
+  <div class="note">
+    <b>Why the calculation is re-runnable.</b> <code>ATT.ATTENDANCE</code> is derived, never
+    typed. Approve a leave request for last Tuesday and nothing changes until the calculation
+    runs again for that date — at which point Tuesday stops being an absence. The same is true
+    of a holiday added late, or a scan appended by hand.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="payroll">
+  <h2><span class="n">06</span> Payroll — the monthly cycle</h2>
+  <p class="lede">A run is opened for one branch and one month. Everything else is read, not
+     entered: the contract says what someone earns, attendance says what they actually worked,
+     and the setting tables say what is taken off.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 1060 430" role="img" aria-label="Payroll run inputs and outputs">
+      <defs>
+        <marker id="arp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+        <marker id="arpA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--pay)"/>
+        </marker>
+      </defs>
+
+      <text class="lbl" x="22" y="24" style="fill:var(--pay)">INPUTS — ALL READ-ONLY TO THE RUN</text>
+
+      <g>
+        <rect class="box" x="18" y="40"  width="212" height="46" rx="8" style="stroke:var(--hr)"/>
+        <text class="s" x="32" y="60">HR.CONTRACT</text>
+        <text class="tiny" x="32" y="75">base salary, currency, pay method</text>
+
+        <rect class="box" x="18" y="94"  width="212" height="46" rx="8" style="stroke:var(--att)"/>
+        <text class="s" x="32" y="114">ATT.ATTENDANCE</text>
+        <text class="tiny" x="32" y="129">days worked, absent, late, OT</text>
+
+        <rect class="box" x="18" y="148" width="212" height="46" rx="8" style="stroke:var(--pay)"/>
+        <text class="s" x="32" y="168">PAY.PAYROLL_RULE</text>
+        <text class="tiny" x="32" y="183">allowances and deduction rules</text>
+
+        <rect class="box" x="18" y="202" width="212" height="46" rx="8" style="stroke:var(--pay)"/>
+        <text class="s" x="32" y="222">PAY.TAX_SETTING + _DTL</text>
+        <text class="tiny" x="32" y="237">salary tax bands, reliefs</text>
+
+        <rect class="box" x="18" y="256" width="212" height="46" rx="8" style="stroke:var(--pay)"/>
+        <text class="s" x="32" y="276">PAY.NSSF_PENSION / HEALTH / RISK</text>
+        <text class="tiny" x="32" y="291">contribution by wage band</text>
+
+        <rect class="box" x="18" y="310" width="212" height="46" rx="8" style="stroke:var(--pay)"/>
+        <text class="s" x="32" y="330">PAY.PAYROLL_ADJUSTMENT</text>
+        <text class="tiny" x="32" y="345">salary advance already paid out</text>
+
+        <rect class="box" x="18" y="364" width="212" height="46" rx="8" style="stroke:var(--pay)"/>
+        <text class="s" x="32" y="384">PAY.EXCHANGE_RATE · SENIORITY_CONFIG</text>
+        <text class="tiny" x="32" y="399">USD ↔ KHR, length-of-service pay</text>
+      </g>
+
+      <!-- engine -->
+      <rect x="320" y="150" width="200" height="130" rx="12" style="fill:var(--pay-bg);stroke:var(--pay);stroke-width:2.4"/>
+      <text class="t" x="420" y="186" text-anchor="middle" style="fill:var(--pay)">PAY.SP_PAYROLL</text>
+      <text class="t" x="420" y="204" text-anchor="middle" style="fill:var(--pay)">_RUN_CALCULATE</text>
+      <text class="tiny" x="420" y="228" text-anchor="middle">one branch · one month</text>
+      <text class="tiny" x="420" y="244" text-anchor="middle">re-runnable, replaces its</text>
+      <text class="tiny" x="420" y="258" text-anchor="middle">own previous result</text>
+
+      <path class="edge" d="M230,63  C280,63  290,160 316,172" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge" d="M230,117 C280,117 292,172 316,184" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge" d="M230,171 C280,171 296,190 316,196" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge" d="M230,225 C280,225 300,212 316,210" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge" d="M230,279 C280,279 300,236 316,224" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge" d="M230,333 C284,333 296,256 316,242" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge" d="M230,387 C288,387 300,274 316,258" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+
+      <!-- outputs -->
+      <text class="lbl" x="608" y="24" style="fill:var(--pay)">OUTPUT</text>
+
+      <rect class="box" x="604" y="40" width="210" height="70" rx="9" style="stroke:var(--pay)"/>
+      <text class="t" x="620" y="62">PAYROLL_RUN</text>
+      <text class="mono" x="620" y="79">PRN_ID · BR_ID · period</text>
+      <text class="tiny" x="620" y="96">CALCULATED → PAID</text>
+
+      <rect class="box" x="604" y="152" width="210" height="86" rx="9" style="stroke:var(--pay);stroke-width:2.4"/>
+      <text class="t" x="620" y="174">PAYROLL_RUN_EMP</text>
+      <text class="mono" x="620" y="191">PRE_ID · PRN_ID · EMP_ID</text>
+      <text class="tiny" x="620" y="207">one payslip header per person</text>
+      <text class="tiny" x="620" y="222">gross · tax · NSSF · net · method</text>
+
+      <rect class="box" x="604" y="280" width="210" height="80" rx="9" style="stroke:var(--pay)"/>
+      <text class="t" x="620" y="302">PAYROLL_RUN_DTL</text>
+      <text class="mono" x="620" y="319">PRE_ID</text>
+      <text class="tiny" x="620" y="335">every line on the payslip —</text>
+      <text class="tiny" x="620" y="349">earning, deduction, employer cost</text>
+
+      <path class="edge-strong" d="M520,200 C556,200 566,86 598,78" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge-strong" d="M520,210 H598" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge-strong" d="M709,238 V276" marker-end="url(#arpA)" style="stroke:var(--pay)"/>
+      <path class="edge" d="M709,110 V148" marker-end="url(#arp)"/>
+
+      <!-- payslip sample -->
+      <rect x="862" y="152" width="184" height="208" rx="9" style="fill:var(--line-soft);stroke:var(--line)"/>
+      <text class="s" x="876" y="174" style="font-weight:700">A payslip, in rows</text>
+      <text class="tiny" x="876" y="196" style="fill:var(--pay)">EARNING</text>
+      <text class="tiny" x="876" y="210">Basic salary</text>
+      <text class="tiny" x="876" y="224">Overtime · holiday pay</text>
+      <text class="tiny" x="876" y="246" style="fill:var(--warn)">DEDUCTION</text>
+      <text class="tiny" x="876" y="260">Absence · late · early</text>
+      <text class="tiny" x="876" y="274">NSSF pension (employee)</text>
+      <text class="tiny" x="876" y="288">Tax on salary · advance</text>
+      <text class="tiny" x="876" y="310" style="fill:var(--muted)">EMPLOYER COST</text>
+      <text class="tiny" x="876" y="324">NSSF pension · health · risk</text>
+      <text class="tiny" x="876" y="346" style="fill:var(--faint)">INFO — leave remaining</text>
+      <path class="edge-dash" d="M814,256 H858" marker-end="url(#arp)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="calc">
+  <h2><span class="n">07</span> Inside the payroll engine</h2>
+  <p class="lede">The order matters: tax is worked out on what is left after NSSF, so NSSF has
+     to be settled first. Each step writes rows into the payslip, and the header totals are
+     summed from those rows at the end.</p>
+
+  <div class="steps">
+    <div class="step"><div><b>Resolve the run</b>
+      <p>Branch and period are required. Pick the exchange rate that applies — the whole
+         calculation is done in riel, because the tax and NSSF bands are.</p></div></div>
+
+    <div class="step"><div><b>Build the employee set</b>
+      <p>Everyone with an active contract carrying a salary above zero, in that branch.
+         A contract that starts or ends mid-month is pro-rated from its own dates.</p></div></div>
+
+    <div class="step"><div><b>Fold in attendance</b>
+      <p>Scheduled days, present, absent, leave, late minutes, early minutes, overtime hours,
+         public holiday and day-off work — all read from <code>ATT.ATTENDANCE</code>.</p></div></div>
+
+    <div class="step"><div><b>Earnings</b>
+      <p>Basic, divided by the contract's own working days per month rather than a fixed
+         figure, plus overtime, holiday and day-off pay, plus rule-driven allowances.</p></div></div>
+
+    <div class="step"><div><b>Attendance deductions</b>
+      <p>Absence by the day, late and early by the minute. A day already counted as absent
+         contributes no late or early minutes — that double count was a real bug.</p></div></div>
+
+    <div class="step"><div><b>NSSF by wage band</b>
+      <p>The riel wage picks a band. Pension splits employee / employer; health and
+         occupational risk are employer-only. A company setting can move the employee's
+         half onto the employer, in which case nothing is deducted.</p></div></div>
+
+    <div class="step"><div><b>Tax on salary</b>
+      <p>Taxable earnings, less family relief, less the employee's NSSF where the setting
+         allows it, then run down the bands. Residents and non-residents use different tables.</p></div></div>
+
+    <div class="step"><div><b>Seniority and advances</b>
+      <p>Length-of-service pay where it is due, and any salary advance already handed out
+         this period comes back off the net.</p></div></div>
+
+    <div class="step"><div><b>Write it out</b>
+      <p>Delete the previous result for this run and insert fresh headers and lines. Pay
+         currency and per-employee pay method chosen on the screen survive the rewrite.</p></div></div>
+  </div>
+
+  <div class="note">
+    <b>Re-running is safe and expected.</b> The procedure clears its own previous output for
+    that run before writing. It does <em>not</em> clear anything a human chose on the screen —
+    pay currency and cash-or-bank are carried across deliberately.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="approval">
+  <h2><span class="n">08</span> The request and approval chain</h2>
+  <p class="lede">Four modules share one workflow — leave, working/overtime, late-early
+     excuse, and asset requests. Learning the chain once covers all of them.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 1020 240" role="img" aria-label="Request approval workflow states">
+      <defs>
+        <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+      </defs>
+
+      <g>
+        <rect class="box" x="16"  y="60" width="150" height="56" rx="10" style="stroke:var(--sys)"/>
+        <text class="t" x="91"  y="83" text-anchor="middle">PENDING</text>
+        <text class="tiny" x="91" y="101" text-anchor="middle">saved, not sent</text>
+
+        <rect class="box" x="222" y="60" width="150" height="56" rx="10" style="stroke:var(--eng)"/>
+        <text class="t" x="297" y="83" text-anchor="middle">SUBMIT</text>
+        <text class="tiny" x="297" y="101" text-anchor="middle">with the requester's boss</text>
+
+        <rect class="box" x="428" y="60" width="150" height="56" rx="10" style="stroke:var(--eng)"/>
+        <text class="t" x="503" y="83" text-anchor="middle">RECOMMEND</text>
+        <text class="tiny" x="503" y="101" text-anchor="middle">endorsed, with HR</text>
+
+        <rect class="box" x="634" y="60" width="150" height="56" rx="10" style="stroke:var(--pay);fill:var(--pay-bg)"/>
+        <text class="t" x="709" y="83" text-anchor="middle">NORMAL</text>
+        <text class="tiny" x="709" y="101" text-anchor="middle">approved — it counts now</text>
+
+        <rect class="box" x="840" y="60" width="150" height="56" rx="10" style="stroke:var(--warn);fill:var(--warn-bg)"/>
+        <text class="t" x="915" y="83" text-anchor="middle">REJECT</text>
+        <text class="tiny" x="915" y="101" text-anchor="middle">refused, with a reason</text>
+      </g>
+
+      <path class="edge" d="M166,88 H216" marker-end="url(#arw)"/>
+      <path class="edge" d="M372,88 H422" marker-end="url(#arw)"/>
+      <path class="edge" d="M578,88 H628" marker-end="url(#arw)"/>
+
+      <path class="edge-dash" d="M297,116 C297,170 915,180 915,122" marker-end="url(#arw)"/>
+      <path class="edge-dash" d="M503,116 C503,160 880,166 902,122" marker-end="url(#arw)"/>
+      <text class="tiny" x="600" y="196" text-anchor="middle">either approver can refuse</text>
+
+      <path class="edge-dash" d="M222,74 C196,40 120,40 95,56" marker-end="url(#arw)"/>
+      <text class="tiny" x="158" y="36" text-anchor="middle">pulled back while still pending</text>
+
+      <text class="tiny" x="709" y="140" text-anchor="middle" style="fill:var(--pay)">only now does attendance and payroll see it</text>
+    </svg>
+  </div>
+
+  <table>
+    <thead><tr><th>Request</th><th>Table</th><th>What approval changes</th></tr></thead>
+    <tbody>
+      <tr><td>Leave</td><td><code>ATT.LEAVE_REQUEST</code></td>
+          <td>The days stop being absences and come off the annual leave balance.</td></tr>
+      <tr><td>Working / overtime</td><td><code>ATT.WORKINGREQUEST</code></td>
+          <td>Hours become payable overtime, or a day off becomes a paid working day.</td></tr>
+      <tr><td>Late / early</td><td><code>ATT.LATEARLYREQUEST</code></td>
+          <td>Those minutes stop being deducted from pay.</td></tr>
+      <tr><td>Asset</td><td><code>ASS.ASSET_REQUEST</code></td>
+          <td>An assignment can be raised against the asset and it leaves the pool.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Nothing counts until it is approved.</b> Every one of these is read by the attendance
+    calculation with a status filter. A request sitting at <code>SUBMIT</code> has no effect on
+    anyone's pay — which is the point, but it also means a forgotten approval looks exactly
+    like an absence.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="support">
+  <h2><span class="n">09</span> Supporting domains</h2>
+  <p class="lede">Four smaller modules, all built the same way: a header table, sometimes a
+     detail table, an audit twin, and a foreign key to the employee.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 1040 300" role="img" aria-label="Asset, performance, engagement and learning relations">
+      <defs>
+        <marker id="ars" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+      </defs>
+
+      <!-- Asset -->
+      <text class="lbl" x="22" y="24" style="fill:var(--ass)">ASSET — A THING THROUGH ITS LIFE</text>
+      <rect class="box" x="18"  y="38" width="118" height="46" rx="8" style="stroke:var(--ass)"/>
+      <text class="s" x="77" y="58" text-anchor="middle">ASSET</text><text class="tiny" x="77" y="73" text-anchor="middle">the item</text>
+      <rect class="box" x="158" y="38" width="118" height="46" rx="8" style="stroke:var(--ass)"/>
+      <text class="s" x="217" y="58" text-anchor="middle">REQUEST</text><text class="tiny" x="217" y="73" text-anchor="middle">someone asks</text>
+      <rect class="box" x="298" y="38" width="118" height="46" rx="8" style="stroke:var(--ass)"/>
+      <text class="s" x="357" y="58" text-anchor="middle">ASSIGNMENT</text><text class="tiny" x="357" y="73" text-anchor="middle">handed over</text>
+      <rect class="box" x="438" y="38" width="118" height="46" rx="8" style="stroke:var(--ass)"/>
+      <text class="s" x="497" y="58" text-anchor="middle">RETURN</text><text class="tiny" x="497" y="73" text-anchor="middle">given back</text>
+      <path class="edge" d="M136,61 H152" marker-end="url(#ars)"/>
+      <path class="edge" d="M276,61 H292" marker-end="url(#ars)"/>
+      <path class="edge" d="M416,61 H432" marker-end="url(#ars)"/>
+
+      <!-- Learning -->
+      <text class="lbl" x="22" y="124" style="fill:var(--lnd)">LEARNING &amp; DEVELOPMENT</text>
+      <rect class="box" x="18"  y="138" width="138" height="52" rx="8" style="stroke:var(--lnd)"/>
+      <text class="s" x="87" y="158" text-anchor="middle">COURSE</text><text class="mono" x="87" y="175" text-anchor="middle">CRS_ID</text>
+      <rect class="box" x="198" y="138" width="138" height="52" rx="8" style="stroke:var(--lnd)"/>
+      <text class="s" x="267" y="158" text-anchor="middle">ENROLLMENT</text><text class="mono" x="267" y="175" text-anchor="middle">EMP_ID · CRS_ID</text>
+      <rect class="box" x="378" y="138" width="138" height="52" rx="8" style="stroke:var(--lnd)"/>
+      <text class="s" x="447" y="158" text-anchor="middle">CERTIFICATION</text><text class="mono" x="447" y="175" text-anchor="middle">EMP_ID · expiry</text>
+      <path class="edge" d="M156,164 H192" marker-end="url(#ars)"/>
+      <text class="tiny" x="447" y="208" text-anchor="middle">stands alone — not every</text>
+      <text class="tiny" x="447" y="221" text-anchor="middle">certificate comes from a course</text>
+
+      <!-- Performance -->
+      <text class="lbl" x="606" y="24" style="fill:var(--prf)">PERFORMANCE</text>
+      <rect class="box" x="602" y="38" width="190" height="46" rx="8" style="stroke:var(--prf)"/>
+      <text class="s" x="616" y="58">APPRAISAL</text><text class="tiny" x="616" y="73">periodic review</text>
+      <rect class="box" x="602" y="96" width="190" height="46" rx="8" style="stroke:var(--prf)"/>
+      <text class="s" x="616" y="116">MONTHLY_COMMENT</text><text class="tiny" x="616" y="131">one per person per month</text>
+      <rect class="box" x="602" y="154" width="190" height="46" rx="8" style="stroke:var(--prf)"/>
+      <text class="s" x="616" y="174">TASK + TASK_DTL</text><text class="tiny" x="616" y="189">assigned work</text>
+
+      <!-- Engagement -->
+      <text class="lbl" x="836" y="24" style="fill:var(--eng)">ENGAGEMENT</text>
+      <rect class="box" x="832" y="38" width="190" height="46" rx="8" style="stroke:var(--eng)"/>
+      <text class="s" x="846" y="58">ANNOUNCEMENT</text><text class="tiny" x="846" y="73">+ DTL: who it reaches</text>
+      <rect class="box" x="832" y="96" width="190" height="46" rx="8" style="stroke:var(--eng)"/>
+      <text class="s" x="846" y="116">SURVEY</text><text class="tiny" x="846" y="131">+ DTL: which questions</text>
+      <rect class="box" x="832" y="154" width="190" height="46" rx="8" style="stroke:var(--eng)"/>
+      <text class="s" x="846" y="174">RECOGNITION</text><text class="tiny" x="846" y="189">award, points, giver</text>
+      <rect class="box" x="832" y="222" width="190" height="46" rx="8" style="stroke:var(--eng);stroke-width:2.2"/>
+      <text class="s" x="846" y="242">QUESTIONNAIRE</text><text class="tiny" x="846" y="257">shared with REC exams</text>
+      <path class="edge-strong" d="M927,222 V142" marker-end="url(#ars)" style="stroke:var(--eng)"/>
+
+      <!-- employee anchor -->
+      <rect class="box" x="602" y="240" width="190" height="44" rx="22" style="stroke:var(--hr);stroke-width:2.2;fill:var(--hr-bg)"/>
+      <text class="t" x="697" y="267" text-anchor="middle" style="fill:var(--hr)">HR.EMPLOYEE</text>
+      <path class="edge-dash" d="M602,262 C560,262 540,200 516,170"/>
+      <path class="edge-dash" d="M602,258 C560,258 320,200 267,192"/>
+      <path class="edge-dash" d="M697,240 V204"/>
+      <path class="edge-dash" d="M602,250 C560,250 540,80 560,66"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<section id="patterns">
+  <h2><span class="n">10</span> Patterns that repeat everywhere</h2>
+  <p class="lede">Five conventions account for most of the schema. Once you recognise them,
+     a table you have never opened is already half familiar.</p>
+
+  <table>
+    <thead><tr><th style="width:21%">Pattern</th><th style="width:30%">How you spot it</th><th>What it is for</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Audit twin</b></td>
+        <td><code>X</code> and <code>X_STM</code> — 78 pairs</td>
+        <td>Every save writes a row to the twin holding the record before and after as JSON,
+            with who, when, from which machine. The History tab on every screen reads it.</td>
+      </tr>
+      <tr>
+        <td><b>Soft delete</b></td>
+        <td><code>LTR_STS</code> = <code>NORMAL</code> / <code>DELETE</code></td>
+        <td>Nothing is ever really removed. With 506 foreign keys pointing inward a hard
+            delete would be impossible anyway, and the audit trail has to survive.</td>
+      </tr>
+      <tr>
+        <td><b>Procedure set</b></td>
+        <td><code>SPV_</code> <code>SPI_</code> <code>SPL_</code> <code>SP_*_B4SAVE</code> <code>SP_*_SAVE</code></td>
+        <td>List, read one, droplist, validate, write. <code>B4SAVE</code> and
+            <code>B4DELETE</code> only ever return a verdict and a sentence — they change
+            nothing, so a refusal reads as plain English rather than a SQL error.</td>
+      </tr>
+      <tr>
+        <td><b>Parameter list</b></td>
+        <td><code>DSP.PARAMET_LIST</code> keyed by <code>PML_TYPE</code></td>
+        <td>Every droplist in the product. Tables store the <em>code</em>, never the id, so
+            renaming a label is safe and translating it costs nothing.</td>
+      </tr>
+      <tr>
+        <td><b>Generated codes</b></td>
+        <td><code>PML_TYPE = 'CODE_GEN'</code></td>
+        <td>Prefix and digit count per record type, so <code>EMP-0001</code>,
+            <code>CRS-0001</code>, <code>EXAM-032</code> all come from one place and none of
+            them is typed by hand.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Where the words come from</h3>
+  <p class="lede">No label is hard-coded in a screen. <code>SYSUP.SYSLANGUAGE</code> holds one
+     row per form per language, each a JSON array of caption keys — which is why the whole
+     product switches between English and Khmer without a rebuild.</p>
+
+  <div class="panel scroll">
+    <svg viewBox="0 0 900 120" role="img" aria-label="How a caption reaches the screen">
+      <defs>
+        <marker id="arl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--faint)"/>
+        </marker>
+      </defs>
+      <rect class="box" x="16"  y="34" width="186" height="52" rx="9" style="stroke:var(--sys)"/>
+      <text class="s" x="109" y="56" text-anchor="middle">SYSUP.SYSLANGUAGE</text>
+      <text class="tiny" x="109" y="72" text-anchor="middle">one row per form per language</text>
+
+      <rect class="box" x="258" y="34" width="186" height="52" rx="9" style="stroke:var(--sys)"/>
+      <text class="s" x="351" y="56" text-anchor="middle">JLCAPTION — JSON</text>
+      <text class="tiny" x="351" y="72" text-anchor="middle">[{ LBL_KEY, CAPTION }, …]</text>
+
+      <rect class="box" x="500" y="34" width="186" height="52" rx="9" style="stroke:var(--accent)"/>
+      <text class="s" x="593" y="56" text-anchor="middle">getlabel() → t('key')</text>
+      <text class="tiny" x="593" y="72" text-anchor="middle">the Vue helper</text>
+
+      <rect class="box" x="742" y="34" width="142" height="52" rx="9" style="stroke:var(--hr)"/>
+      <text class="s" x="813" y="56" text-anchor="middle">the screen</text>
+      <text class="tiny" x="813" y="72" text-anchor="middle">in either language</text>
+
+      <path class="edge" d="M202,60 H252" marker-end="url(#arl)"/>
+      <path class="edge" d="M444,60 H494" marker-end="url(#arl)"/>
+      <path class="edge" d="M686,60 H736" marker-end="url(#arl)"/>
+    </svg>
+  </div>
+</section>
+
+<footer>
+  <div>Generated from the live HRMS database — 200 tables, 506 foreign keys, 976 stored
+       procedures across 13 schemas. Relationships shown are real foreign keys, not an
+       idealised model.</div>
+</footer>
+
+</div>
+</body>
+</html>

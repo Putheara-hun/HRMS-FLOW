@@ -1,0 +1,1632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HRMS Mobile — UI Components</title>
+<style>
+  :root{
+    --bg:#070b14; --ink:#eef2fa; --muted:#9dabc4; --faint:#6b7a93;
+    --brand:#6366f1; --brand2:#a855f7; --brand3:#22d3ee;
+    --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+
+    /* component surfaces — light, because the app is light */
+    --c-bg:#f4f6fc; --c-card:#fff; --c-ink:#131a2a; --c-sub:#78859c;
+    --c-line:#e3e9f2; --c-line2:#eef1f7; --c-dis:#f1f4f9;
+    --brand-soft:#eef0ff; --ok-soft:#e6f9f1; --warn-soft:#fef5e4; --bad-soft:#fdeded;
+
+    --e1:0 1px 2px rgba(10,15,30,.05), 0 2px 6px -2px rgba(10,15,30,.06);
+    --e2:0 2px 4px rgba(10,15,30,.05), 0 8px 18px -8px rgba(10,15,30,.14);
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:74px}
+  body{margin:0;background:var(--bg);color:var(--ink);overflow-x:hidden;
+       font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:-20% -10%;z-index:-2;pointer-events:none;filter:blur(10px);
+    background:
+      radial-gradient(42rem 30rem at 10% 0%,  rgba(99,102,241,.3), transparent 62%),
+      radial-gradient(38rem 28rem at 92% 8%,  rgba(168,85,247,.24), transparent 62%),
+      radial-gradient(44rem 32rem at 68% 74%, rgba(34,211,238,.14), transparent 64%),
+      radial-gradient(40rem 30rem at 16% 92%, rgba(16,185,129,.12), transparent 62%);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:58px 58px;
+    -webkit-mask-image:radial-gradient(70% 55% at 50% 30%,#000,transparent 85%);
+            mask-image:radial-gradient(70% 55% at 50% 30%,#000,transparent 85%);}
+  .wrap{max-width:1360px;margin:0 auto;padding:0 22px}
+
+  header{padding:60px 0 44px}
+  header h1{margin:0 0 10px;font-size:clamp(1.9rem,4vw,2.8rem);line-height:1.05;letter-spacing:-.035em;font-weight:800;
+    background:linear-gradient(104deg,#fff 10%,#c7d2fe 46%,#a855f7 76%,#22d3ee 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  header p{margin:0;color:#aab6ce;max-width:64ch;font-size:1rem}
+  header a{color:#c7d2fe;text-decoration:none;border-bottom:1px solid rgba(199,210,254,.32);font-size:.86rem}
+  header a:hover{color:#fff}
+
+  nav{position:sticky;top:0;z-index:70;background:rgba(7,11,20,.72);
+      backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
+      border-bottom:1px solid rgba(255,255,255,.08)}
+  nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:9px 22px}
+  nav .wrap::-webkit-scrollbar{display:none}
+  nav a{color:var(--muted);text-decoration:none;padding:9px 15px;font-size:.84rem;font-weight:600;
+        white-space:nowrap;border-radius:999px;border:1px solid transparent;transition:.18s}
+  nav a:hover{color:#fff;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1)}
+
+  section{padding:62px 0 10px}
+  h2{margin:0 0 9px;font-size:1.5rem;letter-spacing:-.025em;font-weight:750;display:flex;align-items:center;gap:13px}
+  h2 .n{font-size:.7rem;font-weight:800;letter-spacing:.1em;color:#fff;padding:6px 11px;border-radius:9px;
+        background:linear-gradient(135deg,var(--brand),var(--brand2));
+        box-shadow:0 6px 18px -6px rgba(99,102,241,.8), inset 0 1px 0 rgba(255,255,255,.3)}
+  .lede{color:var(--muted);margin:0 0 30px;max-width:82ch;font-size:.96rem}
+  .lede b{color:#dbe3f5}
+  h3{margin:34px 0 14px;font-size:1rem;font-weight:700;color:#dce4f3;letter-spacing:-.01em;
+     display:flex;align-items:center;gap:9px}
+  h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.12),transparent)}
+
+  /* the light canvas every component is shown on */
+  .canvas{background:linear-gradient(170deg,#f7f9fd,#eef2f9);border-radius:22px;padding:24px;
+          box-shadow:0 2px 4px rgba(10,15,30,.2), 0 20px 50px -24px rgba(0,0,0,.7),
+                     inset 0 1px 0 rgba(255,255,255,.9);
+          border:1px solid rgba(255,255,255,.14);color:var(--c-ink)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:22px}
+  .cell .st{font-size:.65rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;
+            color:var(--c-sub);margin-bottom:9px}
+  .cell + .cell{margin-top:0}
+  .stack{display:flex;flex-direction:column;gap:14px}
+
+  /* ══ FIELD ══ */
+  .f{display:block}
+  .f .lab{font-size:.68rem;font-weight:750;color:var(--c-sub);letter-spacing:.05em;
+          text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+  .f .lab i{color:var(--bad);font-style:normal}
+  .f .ctl{
+    background:#fff;border:1.5px solid var(--c-line);border-radius:var(--r);
+    padding:12px 14px;display:flex;align-items:center;gap:10px;min-height:48px;
+    box-shadow:var(--e1), inset 0 1px 0 #fff;transition:.16s;
+  }
+  .f .ctl .tx{flex:1;font-size:.9rem;font-weight:550;color:var(--c-ink);min-width:0}
+  .f .ctl .ph{flex:1;font-size:.9rem;color:#aab4c4;font-weight:400}
+  .f .ctl .ic{font-size:.95rem;color:var(--c-sub);flex:none;line-height:1}
+  .f .ctl .cur{width:1.5px;height:18px;background:var(--brand);border-radius:2px;
+               animation:blink 1.1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+  .f .help{font-size:.7rem;color:var(--c-sub);margin-top:6px;display:flex;gap:5px;align-items:flex-start}
+  .f .help.err{color:#c62f2f} .f .help.good{color:#0a7d58}
+
+  .f.focus .ctl{border-color:var(--brand);box-shadow:0 0 0 4px rgba(99,102,241,.14), var(--e2), inset 0 1px 0 #fff}
+  .f.focus .lab{color:var(--brand)}
+  .f.err .ctl{border-color:var(--bad);box-shadow:0 0 0 4px rgba(239,68,68,.12), var(--e1)}
+  .f.good .ctl{border-color:var(--ok);box-shadow:0 0 0 4px rgba(16,185,129,.12), var(--e1)}
+  .f.dis .ctl{background:var(--c-dis);border-color:#e6ebf3;box-shadow:none}
+  .f.dis .tx,.f.dis .ph{color:#9aa6b8}
+  .f.dis .lab{color:#a9b4c4}
+
+  .grow{flex:1;min-width:0}
+  .card{background:linear-gradient(170deg,#fff,#fbfcfe);border-radius:17px;padding:14px;
+        box-shadow:var(--e2), inset 0 1px 0 #fff;border:1px solid rgba(10,15,30,.045)}
+
+  /* ══ BUTTONS ══ */
+  .btn{border:0;border-radius:var(--r);padding:13px 18px;font:inherit;font-size:.86rem;font-weight:750;
+       letter-spacing:-.01em;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+       background:linear-gradient(135deg,var(--brand),#7c3aed);color:#fff;
+       box-shadow:0 8px 18px -8px rgba(99,102,241,.9), inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn.w{width:100%}
+  .btn.g{background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 8px 18px -8px rgba(16,185,129,.9), inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn.r{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 8px 18px -8px rgba(239,68,68,.9), inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn.o{background:#fff;color:var(--brand);border:1.5px solid rgba(99,102,241,.32);box-shadow:var(--e1)}
+  .btn.ghost{background:transparent;color:var(--brand);box-shadow:none}
+  .btn.sm{padding:9px 13px;font-size:.76rem;border-radius:11px}
+  .btn.dis{background:#e6eaf1;color:#a7b2c2;box-shadow:none}
+  .btn.load{background:linear-gradient(135deg,#8b8df3,#9b7bf0);box-shadow:none}
+  .spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;
+        border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .fab{width:54px;height:54px;border-radius:19px;display:grid;place-items:center;font-size:1.3rem;color:#fff;
+       background:linear-gradient(135deg,var(--brand),var(--brand2));
+       box-shadow:0 12px 26px -8px rgba(99,102,241,.95), inset 0 1px 0 rgba(255,255,255,.35)}
+
+  /* ══ SELECTION ══ */
+  .seg{display:flex;background:#e7ebf3;border-radius:var(--r);padding:4px;gap:4px;
+       box-shadow:inset 0 2px 5px rgba(10,15,30,.09)}
+  .seg div{flex:1;text-align:center;padding:9px 6px;border-radius:11px;font-size:.78rem;font-weight:700;color:var(--c-sub)}
+  .seg div.on{background:#fff;color:var(--brand);box-shadow:0 2px 8px -2px rgba(10,15,30,.3), inset 0 1px 0 #fff}
+
+  .sw{width:50px;height:29px;border-radius:999px;background:#d6dde8;position:relative;flex:none;
+      box-shadow:inset 0 2px 5px rgba(10,15,30,.14);transition:.2s}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;background:#fff;
+             box-shadow:0 2px 6px rgba(10,15,30,.3);transition:.2s}
+  .sw.on{background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:inset 0 1px 3px rgba(0,0,0,.2)}
+  .sw.on::after{left:24px}
+  .sw.dis{background:#e8ecf2;box-shadow:none} .sw.dis::after{background:#f6f8fb}
+
+  .cb{width:22px;height:22px;border-radius:7px;border:2px solid #ccd5e2;background:#fff;flex:none;
+      display:grid;place-items:center;box-shadow:inset 0 1px 2px rgba(10,15,30,.05)}
+  .cb.on{background:linear-gradient(135deg,var(--brand),var(--brand2));border-color:transparent;
+         box-shadow:0 4px 10px -3px rgba(99,102,241,.8)}
+  .cb svg{width:13px;height:13px;stroke:#fff;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;
+          opacity:0}
+  .cb.on svg{opacity:1}
+  .cb.dis{background:var(--c-dis);border-color:#e1e7ef}
+
+  .rd{width:22px;height:22px;border-radius:50%;border:2px solid #ccd5e2;background:#fff;flex:none;position:relative}
+  .rd.on{border-color:var(--brand);box-shadow:0 0 0 4px rgba(99,102,241,.13)}
+  .rd.on::after{content:"";position:absolute;inset:4px;border-radius:50%;
+                background:linear-gradient(135deg,var(--brand),var(--brand2))}
+
+  .opt{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--c-line);
+       border-radius:var(--r);padding:12px 14px;box-shadow:var(--e1)}
+  .opt.on{border-color:var(--brand);background:linear-gradient(135deg,#fff,#f7f8ff);
+          box-shadow:0 0 0 3px rgba(99,102,241,.1), var(--e1)}
+  .opt .ot{font-size:.85rem;font-weight:650} .opt .os{font-size:.7rem;color:var(--c-sub);margin-top:1px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-size:.76rem;font-weight:650;padding:8px 13px;border-radius:999px;background:#fff;
+        border:1.5px solid var(--c-line);color:var(--c-sub);box-shadow:var(--e1);
+        display:inline-flex;align-items:center;gap:6px}
+  .chip.on{background:linear-gradient(135deg,var(--brand),#7c3aed);color:#fff;border-color:transparent;
+           box-shadow:0 6px 14px -5px rgba(99,102,241,.85), inset 0 1px 0 rgba(255,255,255,.3)}
+  .chip .x{opacity:.75;font-size:.8rem}
+
+  /* ══ SPECIALISED ══ */
+  .otp{display:flex;gap:9px}
+  .otp b{flex:1;aspect-ratio:1/1.18;border-radius:13px;background:#fff;border:1.5px solid var(--c-line);
+         display:grid;place-items:center;font-size:1.3rem;font-weight:750;box-shadow:var(--e1), inset 0 1px 0 #fff}
+  .otp b.on{border-color:var(--brand);box-shadow:0 0 0 4px rgba(99,102,241,.14), var(--e2)}
+  .otp b.empty{color:#c6cfdb}
+
+  .step{display:flex;align-items:center;gap:0;background:#fff;border:1.5px solid var(--c-line);
+        border-radius:var(--r);box-shadow:var(--e1);overflow:hidden}
+  .step i{width:46px;height:48px;display:grid;place-items:center;font-size:1.1rem;font-style:normal;
+          color:var(--brand);background:#fafbff}
+  .step .v{flex:1;text-align:center;font-size:1rem;font-weight:750}
+
+  .slider{padding:6px 2px}
+  .slider .track{height:7px;border-radius:5px;background:#dfe5ee;position:relative;
+                 box-shadow:inset 0 1px 3px rgba(10,15,30,.12)}
+  .slider .fill{position:absolute;left:0;top:0;bottom:0;width:62%;border-radius:5px;
+                background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  .slider .knob{position:absolute;left:62%;top:50%;transform:translate(-50%,-50%);width:24px;height:24px;
+                border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(10,15,30,.35), 0 0 0 2px var(--brand)}
+  .slider .sc{display:flex;justify-content:space-between;font-size:.68rem;color:var(--c-sub);margin-top:10px}
+
+  .upl{border:2px dashed #ccd6e4;border-radius:var(--r);background:linear-gradient(170deg,#fff,#fafcff);
+       padding:22px;text-align:center}
+  .upl .ui{width:44px;height:44px;border-radius:15px;margin:0 auto 10px;display:grid;place-items:center;
+           font-size:1.15rem;background:var(--brand-soft);color:var(--brand)}
+  .upl .ut{font-size:.84rem;font-weight:700} .upl .us{font-size:.7rem;color:var(--c-sub);margin-top:3px}
+  .thumb{width:62px;height:62px;border-radius:13px;background:linear-gradient(135deg,#c7d2fe,#e9d5ff);
+         position:relative;flex:none;box-shadow:var(--e1)}
+  .thumb .rm{position:absolute;top:-6px;right:-6px;width:21px;height:21px;border-radius:50%;background:var(--bad);
+             color:#fff;display:grid;place-items:center;font-size:.68rem;font-weight:700;
+             box-shadow:0 3px 8px -2px rgba(239,68,68,.8)}
+
+  .sheet{background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 34px -14px rgba(10,15,30,.4);
+         padding:10px 0 14px;overflow:hidden}
+  .sheet .gr{width:38px;height:4px;border-radius:3px;background:#d8dfe9;margin:0 auto 12px}
+  .sheet .sh{font-size:.9rem;font-weight:750;padding:0 18px 11px;border-bottom:1px solid var(--c-line2)}
+  .sheet .si{display:flex;align-items:center;gap:11px;padding:12px 18px;border-bottom:1px solid var(--c-line2);font-size:.86rem}
+  .sheet .si:last-child{border-bottom:0}
+  .sheet .si.on{color:var(--brand);font-weight:700;background:linear-gradient(90deg,var(--brand-soft),transparent)}
+
+  .toast{display:flex;align-items:center;gap:11px;border-radius:15px;padding:13px 15px;color:#fff;
+         box-shadow:0 12px 28px -10px rgba(10,15,30,.6), inset 0 1px 0 rgba(255,255,255,.22)}
+  .toast.ok{background:linear-gradient(135deg,#10b981,#059669)}
+  .toast.bad{background:linear-gradient(135deg,#ef4444,#dc2626)}
+  .toast.info{background:linear-gradient(135deg,#1f2937,#111827)}
+  .toast .tt{font-size:.83rem;font-weight:700} .toast .ts{font-size:.72rem;opacity:.9;margin-top:1px}
+
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .cal span{font-size:.6rem;color:var(--c-sub);text-align:center;font-weight:750}
+  .cal b{aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-size:.72rem;font-weight:650;
+         background:#fff;color:var(--c-ink);box-shadow:var(--e1)}
+  .cal b.mut{background:transparent;color:#c6cfdb;box-shadow:none}
+  .cal b.on{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;
+            box-shadow:0 6px 14px -4px rgba(99,102,241,.9)}
+  .cal b.rng{background:var(--brand-soft);color:var(--brand);box-shadow:none}
+
+  /* ── spec table ── */
+  table{width:100%;border-collapse:separate;border-spacing:0;font-size:.87rem;
+        background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;
+        backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  th{text-align:left;font-size:.67rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);
+     padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.09);font-weight:750;background:rgba(255,255,255,.03)}
+  td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.055);vertical-align:top;color:#c3cde2}
+  td b{color:#eef2fa} tbody tr:last-child td{border-bottom:0}
+  code{font:.83em ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(255,255,255,.08);
+       border-radius:6px;padding:2px 6px;color:#c7d2fe}
+  .canvas code{background:#eef1f7;color:#4f46e5}
+  .note{border-left:3px solid var(--brand);border-radius:0 16px 16px 0;padding:16px 20px;margin:26px 0;
+        font-size:.92rem;color:#cfd8ea;
+        background:linear-gradient(100deg,rgba(99,102,241,.16),rgba(168,85,247,.07));
+        backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .note b{color:#c7d2fe}
+  footer{margin-top:70px;padding:32px 0 60px;border-top:1px solid rgba(255,255,255,.08);color:var(--faint);font-size:.82rem}
+
+  @media (prefers-reduced-motion:reduce){ .cur,.spin{animation:none} }
+  @media print{ body{background:#fff;color:#111} body::before,body::after{display:none} nav{display:none}
+                .canvas{box-shadow:none;break-inside:avoid} td,.note{color:#333} table{background:#fff} }
+
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     LIQUID GLASS — MONOCHROME
+
+     No hue anywhere. White, black, and the greys between them. Glass
+     still needs variation behind it to read as glass, so the backdrop
+     is a soft neutral gradient rather than a flat white — the panels
+     refract light and shade instead of colour.
+
+     Emphasis is carried by fill and weight, not by hue: a filled black
+     control is primary, an outlined one is not.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  :root{
+    --k:#0b0b0d;          /* ink / primary    */
+    --k2:#3a3d44;         /* secondary text   */
+    --k3:#6e737d;         /* tertiary         */
+    --k4:#9aa0aa;         /* placeholder      */
+
+    --g-blur:blur(40px) saturate(150%) brightness(1.06);
+    --g-blur-hi:blur(54px) saturate(170%) brightness(1.1);
+    --g-sweep:linear-gradient(138deg,rgba(255,255,255,.62) 0%,rgba(255,255,255,.2) 26%,
+                              rgba(255,255,255,.04) 54%,rgba(255,255,255,.14) 100%);
+    --g-fill:rgba(255,255,255,.3);
+    --g-fill-hi:rgba(255,255,255,.46);
+    --g-lens:
+      inset 0 1.4px .5px rgba(255,255,255,1),
+      inset 1.4px 0 .5px rgba(255,255,255,.6),
+      inset -1.2px 0 .5px rgba(255,255,255,.34),
+      inset 0 -1.2px .5px rgba(255,255,255,.46);
+    --g-drop:0 2px 6px -2px rgba(11,11,13,.08), 0 14px 38px -12px rgba(11,11,13,.22);
+    --rad:26px;
+  }
+
+  /* neutral backdrop — light and shade for the glass to bend */
+  .screen{
+    background:
+      radial-gradient(46% 32% at 16% 4%,   rgba(11,11,13,.13), transparent 66%),
+      radial-gradient(42% 28% at 92% 10%,  rgba(11,11,13,.09), transparent 66%),
+      radial-gradient(48% 32% at 78% 54%,  rgba(11,11,13,.11), transparent 66%),
+      radial-gradient(44% 30% at 6% 62%,   rgba(11,11,13,.07), transparent 66%),
+      radial-gradient(54% 34% at 50% 102%, rgba(11,11,13,.12), transparent 64%),
+      linear-gradient(170deg,#ffffff 0%,#f0f1f3 52%,#e9eaed 100%);
+  }
+
+  /* every surface */
+  .card, .li, .field, .quick div, .mode, .opt, .upl, .otp b, .step, .chip, .appbar .round{
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    border:0; border-radius:var(--rad);
+    box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .li, .opt, .field{border-radius:22px}
+  .quick div{border-radius:24px}
+  .appbar .round{border-radius:50%}
+  .chip{border-radius:999px}
+  .otp b{border-radius:20px}
+  .card{padding:16px} .li{padding:13px 15px}
+
+  /* the floating tab bar */
+  .tabs{
+    margin:0 11px 11px; border-radius:30px; padding:11px 6px; border:0;
+    background:var(--g-sweep), rgba(255,255,255,.38);
+    -webkit-backdrop-filter:var(--g-blur-hi); backdrop-filter:var(--g-blur-hi);
+    box-shadow:var(--g-lens), 0 10px 32px -10px rgba(11,11,13,.38);
+  }
+  .tabs div{color:var(--k3)}
+  .tabs div.on{color:var(--k)}
+  .tabs div.on::before{top:-11px;height:3.5px;border-radius:0 0 5px 5px;
+                       background:var(--k);box-shadow:0 3px 12px rgba(11,11,13,.55)}
+
+  /* fields */
+  .f .lab{font-size:.79rem;font-weight:520;letter-spacing:0;text-transform:none;
+          color:var(--k3);margin-bottom:8px}
+  .f .ctl{
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    border:0; border-radius:20px; min-height:52px;
+    box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .f .ctl .tx{color:var(--k);font-weight:570} .f .ctl .ph{color:var(--k4)}
+  .f .ctl .ic{color:var(--k3)} .f .ctl .cur{background:var(--k)}
+  .f.focus .ctl{background:var(--g-sweep), var(--g-fill-hi);
+                box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.22), 0 16px 34px -12px rgba(11,11,13,.4)}
+  .f.focus .lab{color:var(--k);font-weight:620}
+  .f.err .ctl{box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.5), var(--g-drop)}
+  .f.good .ctl{box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.3), var(--g-drop)}
+  .f.dis .ctl{background:rgba(255,255,255,.16);box-shadow:inset 0 1px .5px rgba(255,255,255,.6);
+              -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  .f .help{font-size:.74rem;color:var(--k3)}
+  .f .help.err{color:var(--k);font-weight:600} .f .help.good{color:var(--k2)}
+  .f .lab i{color:var(--k)}
+
+  /* recessed tracks */
+  .seg, .meth, .modesw{
+    background:rgba(11,11,13,.09); border:0; border-radius:999px; padding:4px;
+    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+    box-shadow:inset 0 2px 7px rgba(11,11,13,.14), inset 0 -1px 0 rgba(255,255,255,.5);
+  }
+  .meth{border-radius:22px} .meth div{border-radius:18px;color:var(--k3)}
+  .seg div, .modesw span{border-radius:999px;color:var(--k3)}
+  .seg div.on, .modesw span.on{
+    background:var(--g-sweep), rgba(255,255,255,.82); color:var(--k);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    box-shadow:var(--g-lens), 0 4px 12px -3px rgba(11,11,13,.28);
+  }
+  .meth div.on{
+    background:linear-gradient(138deg,rgba(255,255,255,.3),rgba(255,255,255,.04) 42%), var(--k);
+    color:#fff; box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 8px 20px -6px rgba(11,11,13,.6);
+  }
+
+  /* the one dark surface — ink glass */
+  .hero, .mgrbar{
+    background:linear-gradient(138deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.05) 32%,transparent 60%),
+               rgba(11,11,13,.9);
+    -webkit-backdrop-filter:blur(30px) saturate(140%); backdrop-filter:blur(30px) saturate(140%);
+    border:0; border-radius:var(--rad); color:#fff;
+    box-shadow:inset 0 1.5px .5px rgba(255,255,255,.4), inset 0 -1.2px .5px rgba(255,255,255,.14),
+               0 18px 42px -14px rgba(11,11,13,.6);
+  }
+  .hero::before{background:radial-gradient(circle,rgba(255,255,255,.18),transparent 68%)}
+
+  .btn{
+    border:0; border-radius:20px; color:#fff;
+    background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+    box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 14px 30px -10px rgba(11,11,13,.55);
+  }
+  .btn.g, .btn.r{background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+                 box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 14px 30px -10px rgba(11,11,13,.55)}
+  .btn.r{background:linear-gradient(138deg,rgba(255,255,255,.3),rgba(255,255,255,.05) 44%), #fff;
+         color:var(--k); box-shadow:var(--g-lens), inset 0 0 0 1.5px var(--k), var(--g-drop)}
+  .btn.o{background:var(--g-sweep), var(--g-fill-hi); color:var(--k);
+         -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+         box-shadow:var(--g-lens), inset 0 0 0 1.2px rgba(11,11,13,.16), var(--g-drop)}
+  .btn.ghost{background:none;box-shadow:none;color:var(--k2)}
+  .btn.dis{background:rgba(255,255,255,.2);color:var(--k4);
+           box-shadow:inset 0 1px .5px rgba(255,255,255,.5)}
+  .btn.load{background:linear-gradient(138deg,rgba(255,255,255,.2),transparent 44%), rgba(11,11,13,.55);box-shadow:none}
+  .fab{border-radius:24px;color:#fff;
+       background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+       box-shadow:inset 0 1.5px .5px rgba(255,255,255,.4), 0 18px 36px -10px rgba(11,11,13,.65)}
+
+  /* status by tone, not hue */
+  .pill{border:0;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+        box-shadow:inset 0 1px .5px rgba(255,255,255,.85)}
+  .p-ok{background:var(--k);color:#fff;box-shadow:none}
+  .p-warn{background:rgba(11,11,13,.14);color:var(--k)}
+  .p-bad{background:#fff;color:var(--k);box-shadow:inset 0 0 0 1.4px var(--k)}
+  .p-brand{background:rgba(11,11,13,.1);color:var(--k)}
+  .p-grey{background:rgba(11,11,13,.07);color:var(--k3)}
+  .chip{color:var(--k3)}
+  .chip.on{background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+           color:#fff;box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 10px 22px -7px rgba(11,11,13,.55)}
+
+  .cal b:not(.off):not(.mut):not(.now){
+    background:var(--g-sweep), rgba(255,255,255,.26); color:var(--k2); border-radius:13px;
+    -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+    box-shadow:inset 0 1px .5px rgba(255,255,255,.8);
+  }
+  .cal b.ok{background:rgba(11,11,13,.1);color:var(--k)}
+  .cal b.late{background:rgba(11,11,13,.2);color:var(--k)}
+  .cal b.abs{background:var(--k);color:#fff;box-shadow:none}
+  .cal b.now{background:var(--k);color:#fff;border-radius:13px;
+             box-shadow:inset 0 1.4px .5px rgba(255,255,255,.35), 0 8px 20px -5px rgba(11,11,13,.6)}
+  .cal b.off,.cal b.mut{color:var(--k4)}
+  .cal span{color:var(--k4)}
+
+  .sw{background:rgba(11,11,13,.18);border:0;
+      box-shadow:inset 0 2px 7px rgba(11,11,13,.2), inset 0 -1px 0 rgba(255,255,255,.4)}
+  .sw.on{background:var(--k);box-shadow:inset 0 1px 3px rgba(0,0,0,.4)}
+  .sw::after{box-shadow:0 3px 9px rgba(11,11,13,.35), inset 0 1.2px 0 #fff}
+  .cb,.rd{background:rgba(255,255,255,.4);border:1.5px solid rgba(11,11,13,.22);
+          -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+          box-shadow:inset 0 1px .5px rgba(255,255,255,.85)}
+  .cb.on{background:var(--k);border-color:transparent;box-shadow:0 4px 10px -3px rgba(11,11,13,.5)}
+  .rd.on{border-color:var(--k);box-shadow:0 0 0 4px rgba(11,11,13,.1)}
+  .rd.on::after{background:var(--k)}
+  .opt.on{box-shadow:var(--g-lens), inset 0 0 0 1.6px var(--k), var(--g-drop)}
+  .opt.on .ot{color:var(--k)}
+
+  .sheet{
+    border-radius:30px 30px 0 0; border:0;
+    background:var(--g-sweep), rgba(255,255,255,.42);
+    -webkit-backdrop-filter:var(--g-blur-hi); backdrop-filter:var(--g-blur-hi);
+    box-shadow:inset 0 1.5px .5px rgba(255,255,255,1), 0 -18px 46px -14px rgba(11,11,13,.4);
+  }
+  .sheet .si.on{color:var(--k);background:linear-gradient(90deg,rgba(11,11,13,.07),transparent)}
+  .toast{border-radius:22px;border:0;color:#fff;
+         -webkit-backdrop-filter:blur(30px); backdrop-filter:blur(30px);
+         box-shadow:inset 0 1.4px .5px rgba(255,255,255,.35), 0 20px 40px -14px rgba(11,11,13,.6)}
+  .toast.ok,.toast.info{background:linear-gradient(138deg,rgba(255,255,255,.22),transparent 45%), rgba(11,11,13,.88)}
+  .toast.bad{background:linear-gradient(138deg,rgba(255,255,255,.3),transparent 45%), rgba(255,255,255,.9);
+             color:var(--k);box-shadow:inset 0 0 0 1.6px var(--k), 0 20px 40px -14px rgba(11,11,13,.4)}
+  .upl{border:1.6px dashed rgba(11,11,13,.24);background:rgba(255,255,255,.18)}
+  .upl .ui{background:rgba(11,11,13,.08);color:var(--k)}
+
+  /* avatars and accents go mono */
+  .av{background:var(--k) !important;color:#fff;
+      box-shadow:0 3px 9px -2px rgba(11,11,13,.4), inset 0 1.2px 0 rgba(255,255,255,.3)}
+  .pod .av{border-color:#fff}
+  .pod .base{background:var(--k) !important}
+  .mode .pick .ico{background:var(--k);color:#fff;
+                   box-shadow:0 5px 13px -4px rgba(11,11,13,.5), inset 0 1.2px 0 rgba(255,255,255,.3)}
+  .quick .qi{background:rgba(11,11,13,.08) !important;color:var(--k)}
+  .slider .fill{background:var(--k)} .slider .knob{box-shadow:0 3px 10px rgba(11,11,13,.35), 0 0 0 2px var(--k)}
+  .otp b.on{box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.22), var(--g-drop)}
+  .step i{background:rgba(11,11,13,.05);color:var(--k)}
+  .sechead a{color:var(--k);font-weight:650}
+
+  /* dividers are white on glass */
+  .mode .opts{background:rgba(255,255,255,.16);border-top:1px solid rgba(255,255,255,.7)}
+  .mode .opt{border-bottom:1px solid rgba(255,255,255,.6);background:none;box-shadow:none;border-radius:0}
+  .mode .opt:last-child{border-bottom:0}
+  .mode .opt.on .ot{color:var(--k)}
+  .sheet .si,.sheet .sh{border-bottom-color:rgba(255,255,255,.65)}
+  .kv.tot{border-top:1.5px dashed rgba(11,11,13,.2)}
+
+  /* text */
+  .nm,.appbar h3,.f .ctl .tx{color:var(--k)}
+  .mt,.appbar .sub,.sechead,.quick span,.opt .os,.mode .pick .cv .k{color:var(--k3)}
+  .hero .lbl,.hero .sm{color:rgba(255,255,255,.82)}
+
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .card,.li,.field,.quick div,.mode,.opt,.upl,.otp b,.step,.chip,.f .ctl,.btn.o,.appbar .round,
+    .seg div.on,.modesw span.on,.cal b:not(.off):not(.mut):not(.now){background:rgba(255,255,255,.95)}
+    .tabs,.sheet{background:rgba(255,255,255,.97)}
+    .seg,.meth,.modesw{background:#e8e9ec}
+  }
+
+
+  /* the page itself goes mono too — a coloured frame around a colourless
+     app just moves the problem outside the phone */
+  body::before{
+    background:
+      radial-gradient(42rem 30rem at 12% 2%,  rgba(255,255,255,.14), transparent 62%),
+      radial-gradient(38rem 28rem at 88% 10%, rgba(255,255,255,.10), transparent 62%),
+      radial-gradient(44rem 32rem at 70% 72%, rgba(255,255,255,.07), transparent 64%),
+      radial-gradient(40rem 30rem at 18% 88%, rgba(255,255,255,.06), transparent 62%);
+  }
+  header h1{
+    background:linear-gradient(104deg,#fff 0%,#e6e9ef 44%,#aab2c0 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  h2 .n{background:#fff;color:#0b0b0d;box-shadow:0 6px 18px -6px rgba(255,255,255,.4)}
+  .note{border-left-color:#fff;background:linear-gradient(100deg,rgba(255,255,255,.1),rgba(255,255,255,.03))}
+  .note b{color:#fff}
+  code{color:#dfe3ea}
+  .phone{box-shadow:
+      0 2px 3px rgba(0,0,0,.5),
+      0 30px 60px -22px rgba(0,0,0,.85),
+      0 60px 90px -40px rgba(255,255,255,.1),
+      inset 0 0 0 1.5px rgba(255,255,255,.14),
+      inset 0 2px 1px rgba(255,255,255,.22),
+      inset 0 -2px 2px rgba(0,0,0,.6)}
+  .unit:hover .phone{box-shadow:
+      0 2px 3px rgba(0,0,0,.5),
+      0 44px 80px -24px rgba(0,0,0,.9),
+      0 80px 120px -46px rgba(255,255,255,.16),
+      inset 0 0 0 1.5px rgba(255,255,255,.2),
+      inset 0 2px 1px rgba(255,255,255,.28),
+      inset 0 -2px 2px rgba(0,0,0,.6)}
+  /* the canvas carries the same neutral wash the phone screens have */
+  .canvas{
+    background:
+      radial-gradient(46% 32% at 14% 3%,   rgba(11,11,13,.12), transparent 66%),
+      radial-gradient(42% 28% at 93% 9%,   rgba(11,11,13,.08), transparent 66%),
+      radial-gradient(48% 32% at 78% 95%,  rgba(11,11,13,.1), transparent 66%),
+      radial-gradient(44% 30% at 4% 88%,   rgba(11,11,13,.07), transparent 66%),
+      linear-gradient(170deg,#ffffff,#eceef1);
+  }
+  .canvas .st{color:#6e737d;font-weight:700;letter-spacing:.08em}
+
+  /* kill colour at the source — anything still reaching for --brand or
+     --ok gets a grey, so no rule I missed can leak a hue */
+  :root{
+    --brand:#0b0b0d; --brand2:#2a2d33; --brand3:#4a4e57;
+    --ok:#0b0b0d; --warn:#4a4e57; --bad:#0b0b0d;
+    --gold:#0b0b0d; --silver:#5c616b; --bronze:#8a8f99;
+    --brand-soft:rgba(11,11,13,.08); --ok-soft:rgba(11,11,13,.08);
+    --warn-soft:rgba(11,11,13,.12); --bad-soft:rgba(11,11,13,.06);
+    --muted:#9aa0aa; --faint:#6e737d;
+    --c-sub:#6e737d; --c-ink:#0b0b0d; --s-sub:#6e737d; --s-ink:#0b0b0d;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     DARK GLASS — the black surfaces are glass too
+
+     Solid black is paint, not glass. These become translucent ink with
+     the same blur, so the wash behind them shows through. Held at ~.66
+     rather than lower: white text on 40% black over a light backdrop
+     drops under 3:1 and stops being readable. Decorative parts, which
+     carry no text, go further down.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  :root{
+    --ink-glass:rgba(11,11,13,.66);      /* carries white text */
+    --ink-glass-soft:rgba(11,11,13,.5);  /* small, short text  */
+    --ink-glass-dec:rgba(11,11,13,.34);  /* decorative only    */
+    --ink-blur:blur(32px) saturate(150%);
+    --ink-rim:inset 0 1.4px .5px rgba(255,255,255,.42),
+              inset 1.2px 0 .5px rgba(255,255,255,.2),
+              inset 0 -1.2px .5px rgba(255,255,255,.16);
+  }
+
+  .hero, .mgrbar{
+    background:linear-gradient(138deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,.04) 34%,transparent 62%),
+               var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 18px 42px -16px rgba(11,11,13,.45);
+  }
+
+  .btn, .btn.g{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 14px 30px -12px rgba(11,11,13,.4);
+  }
+  .btn.r{
+    background:var(--g-sweep), rgba(255,255,255,.42); color:var(--k);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    box-shadow:var(--g-lens), inset 0 0 0 1.4px rgba(11,11,13,.55), var(--g-drop);
+  }
+  .btn.load{background:linear-gradient(138deg,rgba(255,255,255,.14),transparent 46%), rgba(11,11,13,.4);
+            -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+            box-shadow:var(--ink-rim)}
+  .fab{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 18px 36px -12px rgba(11,11,13,.5);
+  }
+  .meth div.on{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 8px 20px -8px rgba(11,11,13,.45);
+  }
+  .chip.on{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass-soft);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 10px 22px -9px rgba(11,11,13,.4);
+  }
+  .p-ok{
+    background:var(--ink-glass-soft); color:#fff;
+    -webkit-backdrop-filter:blur(18px) saturate(150%); backdrop-filter:blur(18px) saturate(150%);
+    box-shadow:inset 0 1px .5px rgba(255,255,255,.35);
+  }
+  .p-bad{background:rgba(255,255,255,.4);color:var(--k);
+         -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+         box-shadow:inset 0 0 0 1.3px rgba(11,11,13,.45), inset 0 1px .5px rgba(255,255,255,.8)}
+
+  .av{
+    background:var(--ink-glass-soft) !important;
+    -webkit-backdrop-filter:blur(20px) saturate(150%); backdrop-filter:blur(20px) saturate(150%);
+    box-shadow:var(--ink-rim), 0 4px 12px -4px rgba(11,11,13,.3);
+  }
+  .pod .base{background:var(--ink-glass-soft) !important;
+             -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+             box-shadow:var(--ink-rim)}
+  .mode .pick .ico{
+    background:var(--ink-glass-soft);
+    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+    box-shadow:var(--ink-rim), 0 5px 13px -5px rgba(11,11,13,.35);
+  }
+
+  .cal b.abs, .cal b.now{
+    background:var(--ink-glass-soft); color:#fff;
+    -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+    box-shadow:inset 0 1px .5px rgba(255,255,255,.35);
+  }
+  .cal b.now{box-shadow:inset 0 1.2px .5px rgba(255,255,255,.45), 0 8px 20px -8px rgba(11,11,13,.4)}
+
+  .sw.on{background:var(--ink-glass-soft);
+         -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+         box-shadow:inset 0 1px .5px rgba(255,255,255,.3)}
+  .cb.on{background:var(--ink-glass-soft);
+         -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+         box-shadow:inset 0 1px .5px rgba(255,255,255,.3)}
+  .rd.on::after{background:var(--ink-glass)}
+  .opt.on{box-shadow:var(--g-lens), inset 0 0 0 1.4px rgba(11,11,13,.45), var(--g-drop)}
+
+  .tabs div.on::before{background:var(--ink-glass);box-shadow:0 3px 12px rgba(11,11,13,.4)}
+
+  .toast.ok, .toast.info{
+    background:linear-gradient(138deg,rgba(255,255,255,.18),transparent 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 20px 40px -16px rgba(11,11,13,.45);
+  }
+  .toast.bad{background:var(--g-sweep), rgba(255,255,255,.48);color:var(--k);
+             -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+             box-shadow:var(--g-lens), inset 0 0 0 1.4px rgba(11,11,13,.5), var(--g-drop)}
+
+  .slider .fill{background:var(--ink-glass-soft)}
+  .slider .knob{box-shadow:0 3px 10px rgba(11,11,13,.3), 0 0 0 2px rgba(11,11,13,.55)}
+  .quick .qi{background:rgba(11,11,13,.09) !important;
+             -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+             box-shadow:inset 0 1px .5px rgba(255,255,255,.7)}
+  .step i{background:rgba(11,11,13,.06)}
+
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .hero,.mgrbar,.btn,.btn.g,.fab,.meth div.on,.toast.ok,.toast.info{background:rgba(11,11,13,.9)}
+    .av,.p-ok,.chip.on,.pod .base,.cal b.abs,.cal b.now,.sw.on,.cb.on,.mode .pick .ico{background:rgba(11,11,13,.85)}
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     FRESH — light, crisp, high contrast
+
+     The previous pass was grey on grey: a near-black page around screens
+     washed with dark smudges, and glass so thin everything turned muddy.
+     Three fixes:
+
+       1  The page goes light. A dark frame makes anything inside it feel
+          heavy, and it was fighting the white app.
+       2  The screen backdrop lights up — soft white highlights instead of
+          dark stains, so the glass sits on air rather than on dirt.
+       3  Glass fills rise to ~70%. Crisp white reads as clean; 25% white
+          over a grey wash reads as dishwater. The blur still does the work.
+
+     Contrast carries the freshness: true black type on near-white, and
+     the few dark surfaces kept rich rather than washed out.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  :root{
+    --k:#07080a; --k2:#2e3238; --k3:#636974; --k4:#a2a8b3;
+    --page:#eff1f5; --page2:#f7f8fa;
+    --hair:rgba(7,8,10,.07);
+
+    --g-blur:blur(30px) saturate(180%) brightness(1.04);
+    --g-blur-hi:blur(44px) saturate(200%) brightness(1.06);
+    --g-sweep:linear-gradient(140deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.45) 30%,
+                              rgba(255,255,255,.2) 62%,rgba(255,255,255,.4) 100%);
+    --g-fill:rgba(255,255,255,.7);
+    --g-fill-hi:rgba(255,255,255,.86);
+    --g-lens:
+      inset 0 1.4px .5px rgba(255,255,255,1),
+      inset 1.2px 0 .5px rgba(255,255,255,.8),
+      inset -1px 0 .5px rgba(255,255,255,.5),
+      inset 0 -1px .5px rgba(255,255,255,.6);
+    --g-drop:0 1px 2px rgba(7,8,10,.04), 0 6px 16px -8px rgba(7,8,10,.16);
+
+    --ink-glass:rgba(12,14,18,.84);
+    --ink-glass-soft:rgba(12,14,18,.7);
+    --ink-blur:blur(26px) saturate(170%);
+  }
+
+  /* ── 1 · the page ── */
+  body{background:var(--page);color:var(--k)}
+  body::before{
+    background:
+      radial-gradient(40rem 28rem at 10% 0%,  rgba(255,255,255,.95), transparent 64%),
+      radial-gradient(36rem 26rem at 92% 6%,  rgba(255,255,255,.8), transparent 64%),
+      radial-gradient(44rem 30rem at 72% 78%, rgba(255,255,255,.7), transparent 66%),
+      radial-gradient(38rem 28rem at 14% 92%, rgba(255,255,255,.75), transparent 64%);
+    filter:none;
+  }
+  body::after{
+    opacity:.5;
+    background-image:linear-gradient(rgba(7,8,10,.035) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(7,8,10,.035) 1px,transparent 1px);
+  }
+
+  header{padding:72px 0 52px}
+  header h1{
+    background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--k);
+    font-weight:820;letter-spacing:-.04em;
+  }
+  header p{color:var(--k3);font-size:1.05rem}
+  header a{color:var(--k2);border-bottom-color:rgba(7,8,10,.2);font-weight:550}
+  header a:hover{color:var(--k);border-bottom-color:var(--k)}
+  header .counts span{
+    background:rgba(255,255,255,.8);border:1px solid var(--hair);color:var(--k2);font-weight:560;
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+    box-shadow:0 1px 2px rgba(7,8,10,.04);
+  }
+
+  nav{
+    background:rgba(255,255,255,.78);border-bottom:1px solid var(--hair);
+    -webkit-backdrop-filter:saturate(190%) blur(26px);backdrop-filter:saturate(190%) blur(26px);
+    box-shadow:0 1px 3px rgba(7,8,10,.04);
+  }
+  nav a{color:var(--k3);font-weight:580}
+  nav a:hover{color:var(--k);background:rgba(7,8,10,.05);border-color:transparent}
+
+  h2{color:var(--k);font-weight:800;letter-spacing:-.03em;font-size:1.65rem}
+  h2 .n{background:var(--k);color:#fff;box-shadow:0 6px 16px -6px rgba(7,8,10,.4)}
+  h3{color:var(--k);font-weight:700}
+  h3::after{background:linear-gradient(90deg,var(--hair),transparent)}
+  .lede{color:var(--k3);font-size:1rem;margin-bottom:38px}
+  .lede b{color:var(--k)}
+
+  .cap b{color:var(--k);font-weight:720;font-size:1rem}
+  .cap span{color:var(--k3);font-size:.85rem}
+  .cap em{color:var(--k2)}
+  .cell .st{color:var(--k4)}
+
+  /* clean shadow under a light phone, no coloured halo */
+  .phone{
+    background:linear-gradient(150deg,#e4e7ec 0%,#babfc8 22%,#2a2e36 52%,#4a505b 78%,#d8dce2 100%);
+    box-shadow:
+      0 1px 2px rgba(7,8,10,.1),
+      0 18px 36px -14px rgba(7,8,10,.26),
+      0 44px 70px -34px rgba(7,8,10,.3),
+      inset 0 0 0 1.4px rgba(255,255,255,.5),
+      inset 0 2px 1px rgba(255,255,255,.65),
+      inset 0 -2px 2px rgba(0,0,0,.35);
+  }
+  .unit:hover .phone{
+    box-shadow:
+      0 1px 2px rgba(7,8,10,.1),
+      0 30px 54px -16px rgba(7,8,10,.3),
+      0 64px 96px -40px rgba(7,8,10,.34),
+      inset 0 0 0 1.4px rgba(255,255,255,.6),
+      inset 0 2px 1px rgba(255,255,255,.75),
+      inset 0 -2px 2px rgba(0,0,0,.35);
+  }
+
+  table{background:rgba(255,255,255,.78);border:1px solid var(--hair);
+        -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+        box-shadow:0 1px 2px rgba(7,8,10,.04), 0 10px 28px -16px rgba(7,8,10,.2)}
+  th{color:var(--k4);border-bottom-color:var(--hair);background:rgba(7,8,10,.025)}
+  td{color:var(--k2);border-bottom-color:var(--hair)}
+  td b{color:var(--k)}
+  tbody tr:hover td{background:rgba(7,8,10,.02)}
+  code{background:rgba(7,8,10,.06);color:var(--k2)}
+  .note{
+    border-left:3px solid var(--k);border-radius:0 16px 16px 0;color:var(--k2);
+    background:rgba(255,255,255,.72);
+    -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    border-top:1px solid var(--hair);border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);
+    box-shadow:0 1px 2px rgba(7,8,10,.04);
+  }
+  .note b{color:var(--k)}
+  footer{border-top-color:var(--hair);color:var(--k4)}
+
+  /* ── 2 · the screen lights up ── */
+  .screen{
+    background:
+      radial-gradient(52% 34% at 14% 2%,   rgba(255,255,255,1), transparent 68%),
+      radial-gradient(46% 30% at 94% 8%,   rgba(255,255,255,.95), transparent 68%),
+      radial-gradient(54% 36% at 80% 96%,  rgba(255,255,255,.9), transparent 68%),
+      radial-gradient(44% 30% at 2% 70%,   rgba(255,255,255,.85), transparent 68%),
+      linear-gradient(168deg,#f4f6f9 0%,#e9ecf1 54%,#eef0f4 100%);
+  }
+  .canvas{
+    background:
+      radial-gradient(52% 34% at 12% 2%,   rgba(255,255,255,1), transparent 68%),
+      radial-gradient(46% 30% at 94% 8%,   rgba(255,255,255,.95), transparent 68%),
+      radial-gradient(54% 36% at 80% 96%,  rgba(255,255,255,.9), transparent 68%),
+      linear-gradient(168deg,#f5f7fa,#e9ecf1);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 1px 2px rgba(7,8,10,.05), 0 16px 40px -20px rgba(7,8,10,.25),
+               inset 0 1px 0 #fff;
+  }
+
+  /* ── 3 · crisp glass ── */
+  .card, .li, .field, .quick div, .mode, .opt, .upl, .otp b, .step, .chip, .appbar .round{
+    background:var(--g-sweep), var(--g-fill);
+    box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .f .ctl{background:var(--g-sweep), var(--g-fill);box-shadow:var(--g-lens), var(--g-drop)}
+  .f.focus .ctl{background:var(--g-sweep), var(--g-fill-hi);
+                box-shadow:var(--g-lens), 0 0 0 3.5px rgba(7,8,10,.14), 0 10px 26px -10px rgba(7,8,10,.3)}
+  .tabs{background:var(--g-sweep), rgba(255,255,255,.76);
+        box-shadow:var(--g-lens), 0 8px 26px -10px rgba(7,8,10,.3)}
+  .sheet{background:var(--g-sweep), rgba(255,255,255,.8);
+         box-shadow:inset 0 1.5px .5px #fff, 0 -14px 40px -16px rgba(7,8,10,.3)}
+  .seg, .meth, .modesw{background:rgba(7,8,10,.06);
+                       box-shadow:inset 0 2px 6px rgba(7,8,10,.1), inset 0 -1px 0 rgba(255,255,255,.9)}
+  .seg div.on, .modesw span.on{background:var(--g-sweep), rgba(255,255,255,.96);
+                               box-shadow:var(--g-lens), 0 3px 10px -3px rgba(7,8,10,.22)}
+  .cal b:not(.off):not(.mut):not(.now){background:var(--g-sweep), rgba(255,255,255,.66);
+                                       box-shadow:inset 0 1px .5px #fff}
+  .cb,.rd{background:rgba(255,255,255,.85);border-color:rgba(7,8,10,.18)}
+  .sw{background:rgba(7,8,10,.14);box-shadow:inset 0 2px 6px rgba(7,8,10,.16), inset 0 -1px 0 rgba(255,255,255,.8)}
+  .upl{border:1.6px dashed rgba(7,8,10,.18);background:rgba(255,255,255,.5)}
+  .quick .qi{background:rgba(7,8,10,.06) !important;box-shadow:inset 0 1px .5px #fff}
+  .step i{background:rgba(7,8,10,.04)}
+
+  /* dark surfaces stay rich — washed-out black is what looked sad */
+  .hero, .mgrbar{
+    background:linear-gradient(140deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.05) 34%,transparent 62%),
+               var(--ink-glass);
+    box-shadow:inset 0 1.4px .5px rgba(255,255,255,.45), inset 0 -1px .5px rgba(255,255,255,.15),
+               0 14px 34px -14px rgba(7,8,10,.5);
+  }
+  .btn, .btn.g, .fab, .meth div.on{
+    background:linear-gradient(140deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 46%), var(--ink-glass);
+    box-shadow:inset 0 1.4px .5px rgba(255,255,255,.45), 0 10px 24px -10px rgba(7,8,10,.45);
+  }
+  .av{background:var(--ink-glass-soft) !important;
+      box-shadow:inset 0 1.2px .5px rgba(255,255,255,.4), 0 3px 10px -3px rgba(7,8,10,.3)}
+  .p-ok{background:var(--ink-glass-soft)}
+  .chip.on{background:linear-gradient(140deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 46%), var(--ink-glass-soft)}
+  .cal b.abs,.cal b.now,.sw.on,.cb.on{background:var(--ink-glass-soft)}
+  .mode .pick .ico,.pod .base{background:var(--ink-glass-soft) !important}
+  .tabs div.on::before{background:var(--k)}
+  .toast.ok,.toast.info{background:linear-gradient(140deg,rgba(255,255,255,.2),transparent 46%), var(--ink-glass)}
+
+  /* ── type: crisper, more air ── */
+  .appbar h3{font-weight:800;letter-spacing:-.035em;font-size:1.16rem;color:var(--k)}
+  .appbar .sub{color:var(--k3);font-weight:500}
+  .nm{color:var(--k);font-weight:620;letter-spacing:-.012em}
+  .mt{color:var(--k3)}
+  .sechead{color:var(--k4);font-weight:700;letter-spacing:.1em}
+  .sechead a{color:var(--k);font-weight:650}
+  .hero .big{font-weight:800;letter-spacing:-.04em}
+  .hero .lbl{color:rgba(255,255,255,.72)} .hero .sm{color:rgba(255,255,255,.88)}
+  .f .lab{color:var(--k3);font-weight:540;font-size:.8rem}
+  .f.focus .lab{color:var(--k);font-weight:640}
+  .f .ctl .tx{color:var(--k);font-weight:570} .f .ctl .ph{color:var(--k4)}
+  .body{gap:13px;padding:0 16px 6px}
+  .list{gap:9px}
+  .p-warn{background:rgba(7,8,10,.1);color:var(--k2)}
+  .p-brand{background:rgba(7,8,10,.07);color:var(--k2)}
+  .p-grey{background:rgba(7,8,10,.05);color:var(--k3)}
+  .p-bad{background:rgba(255,255,255,.7);box-shadow:inset 0 0 0 1.3px rgba(7,8,10,.4), inset 0 1px .5px #fff}
+
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    nav,header .counts span,table,.note{background:#fff}
+  }
+  @media print{ body{background:#fff} .phone{box-shadow:0 2px 10px rgba(0,0,0,.18)} }
+
+
+  /* The tertiary grey was 2.39:1 on white — section headers and
+     placeholders were decoration rather than text. Both greys moved up
+     until they pass, with enough gap left between them to still read as
+     a hierarchy. */
+  :root{ --k3:#59606b; --k4:#767d88 }
+  .cal b.off, .cal b.mut{color:#9ba1ab}
+  .f .ctl .ph{color:#767d88}
+
+  /* ═══════════════════════════════════════════════════════════════════
+     TYPE & LAYOUT FIX
+
+     The hero card on Home had collapsed to a thin bar — its label showed
+     but the big time had vanished. The body is a flex column and its
+     children were shrinking to fit, squeezing the tallest card flat.
+     Children now keep their own height and the screen clips instead,
+     which is what a phone actually does.
+
+     The rest is typography: uppercase letterspaced eyebrows everywhere
+     read as dated, and the camera captions were colliding with the
+     reticle behind them.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* ── the collapse ── */
+  .body > *{flex:0 0 auto}
+  .body{overflow:hidden}
+  .hero{min-height:fit-content}
+  .hero .big{line-height:1.08;white-space:nowrap}
+
+  /* ── eyebrows become quiet headings, not shouted labels ── */
+  .sechead{
+    font-size:.8rem; font-weight:680; letter-spacing:-.008em; text-transform:none;
+    color:var(--k2); margin:7px 2px 1px;
+  }
+  .sechead a{font-size:.74rem;font-weight:600;color:var(--k3);letter-spacing:0}
+  .hero .lbl{
+    font-size:.74rem; letter-spacing:-.005em; text-transform:none; font-weight:520;
+    color:rgba(255,255,255,.72);
+  }
+  .f .lab{font-size:.8rem;font-weight:540;letter-spacing:-.005em;text-transform:none}
+  .cell .st{font-size:.72rem;font-weight:640;letter-spacing:-.005em;text-transform:none;color:var(--k3)}
+  .field .fl{font-size:.68rem;font-weight:620;letter-spacing:-.003em;text-transform:none;color:var(--k3)}
+  .mode .pick .cv .k{font-size:.68rem;font-weight:600;letter-spacing:-.003em;text-transform:none}
+  .appbar .sub{font-size:.73rem}
+
+  /* ── readable body copy ── */
+  .nm{font-size:.845rem;line-height:1.3;letter-spacing:-.014em;font-weight:620}
+  .mt{font-size:.725rem;line-height:1.42}
+  .pill{font-size:.615rem;letter-spacing:.01em;font-weight:700;padding:4px 9px}
+  .tabs div{font-size:9.5px;font-weight:600;letter-spacing:-.002em}
+  .quick span{font-size:.625rem;letter-spacing:-.005em}
+  .kv{font-size:.775rem} .kv.tot{font-size:.87rem}
+
+  /* stop the awkward two-word wraps in narrow cards */
+  .li .nm, .opt .ot, .card .nm{text-wrap:pretty}
+  .li .mt, .opt .os{text-wrap:pretty}
+
+  /* ── camera captions: a pill, clear of the reticle ── */
+  .cam{display:flex;flex-direction:column;justify-content:flex-end;min-height:230px}
+  .cam .reticle{top:44%}
+  .cam .face{top:46%}
+  .cam .head{top:46%}
+  .cam .hint{
+    position:relative;left:auto;right:auto;bottom:auto;margin:0 14px 14px;
+    background:rgba(10,12,16,.52);
+    -webkit-backdrop-filter:blur(18px) saturate(150%); backdrop-filter:blur(18px) saturate(150%);
+    border-radius:15px;padding:9px 13px;font-size:.735rem;line-height:1.45;
+    text-shadow:none;box-shadow:inset 0 1px .5px rgba(255,255,255,.26);
+    text-wrap:balance;
+  }
+  .cam .hint span{display:block;margin-top:2px;font-size:.69rem}
+
+  /* ── a little more air between things ── */
+  .body{gap:12px;padding:0 16px 6px}
+  .card{padding:15px} .li{padding:12px 14px}
+  .appbar{padding:6px 18px 14px}
+  .appbar h3{font-size:1.2rem;letter-spacing:-.038em;font-weight:780}
+
+  /* ═══════════════════════════════════════════════════════════════════
+     iOS PICKERS
+
+     A select on iPhone is not a dropdown. Tapping the row raises a wheel
+     from the bottom of the screen: a drum of options with a highlight bar
+     across the middle, dimmed and foreshortened as they fall away, and a
+     Cancel / Done toolbar on top.
+
+     The closed state is a Settings-style row — label on the left, current
+     value grey on the right, with the stacked chevron pair that marks a
+     menu button on iOS.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* ── closed: the settings row ── */
+  .iosrow{
+    display:flex;align-items:center;gap:12px;min-height:50px;padding:11px 14px;
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    border-radius:20px;box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .iosrow .rl{font-size:.875rem;font-weight:560;color:var(--k);flex:1;min-width:0}
+  .iosrow .rv{font-size:.875rem;color:var(--k3);font-weight:520;text-align:right;
+              white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56%}
+  .iosrow .rv.ph{color:var(--k4)}
+  .iosrow .cv{display:flex;flex-direction:column;gap:2px;flex:none;opacity:.5}
+  .iosrow .cv i{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;font-style:normal}
+  .iosrow .cv i:first-child{border-bottom:5px solid var(--k2)}
+  .iosrow .cv i:last-child{border-top:5px solid var(--k2)}
+  .iosrow .chev{color:var(--k4);font-size:1rem;flex:none;font-weight:600}
+
+  /* grouped rows, the way Settings stacks them */
+  .iosgroup{border-radius:20px;overflow:hidden;
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    box-shadow:var(--g-lens), var(--g-drop)}
+  .iosgroup .iosrow{background:none;box-shadow:none;border-radius:0;
+    border-bottom:1px solid rgba(7,8,10,.07);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .iosgroup .iosrow:last-child{border-bottom:0}
+
+  /* ── open: the wheel ── */
+  .wheel{
+    border-radius:26px 26px 0 0;overflow:hidden;
+    background:var(--g-sweep), rgba(255,255,255,.82);
+    -webkit-backdrop-filter:var(--g-blur-hi); backdrop-filter:var(--g-blur-hi);
+    box-shadow:inset 0 1.5px .5px #fff, 0 -16px 44px -16px rgba(7,8,10,.3);
+  }
+  .wheel .bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:13px 18px;border-bottom:1px solid rgba(7,8,10,.07);
+  }
+  .wheel .bar .c{font-size:.875rem;color:var(--k3);font-weight:520}
+  .wheel .bar .t{font-size:.8rem;color:var(--k3);font-weight:620}
+  .wheel .bar .d{font-size:.875rem;color:var(--k);font-weight:720}
+
+  .drum{position:relative;height:184px;overflow:hidden}
+  /* the highlight bar the selected row sits inside */
+  .drum .sel{
+    position:absolute;left:10px;right:10px;top:50%;height:38px;transform:translateY(-50%);
+    border-radius:11px;background:rgba(7,8,10,.07);pointer-events:none;
+  }
+  /* rows fade and foreshorten as they fall away from the middle */
+  .drum .rows{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center}
+  .drum .r{height:38px;display:flex;align-items:center;justify-content:center;
+           font-size:1.02rem;font-weight:520;color:var(--k);white-space:nowrap}
+  .drum .r.d1{opacity:.55;transform:scaleY(.94) perspective(260px) rotateX(26deg);font-size:.96rem}
+  .drum .r.d2{opacity:.26;transform:scaleY(.84) perspective(260px) rotateX(44deg);font-size:.9rem}
+  .drum .r.on{font-weight:680}
+  /* glass gradient over the top and bottom, as the real drum has */
+  .drum::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,0) 34%,
+                                rgba(255,255,255,0) 66%,rgba(255,255,255,.92) 100%);
+  }
+
+  /* two drums side by side — a date, or hours and minutes */
+  .drum.two .rows{flex-direction:row}
+  .drum.two .col{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+  /* ── the action-sheet variant, for short lists ── */
+  .acts{padding:0 10px 10px}
+  .acts .grp{border-radius:18px;overflow:hidden;background:rgba(255,255,255,.72);
+             -webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);
+             box-shadow:var(--g-lens), var(--g-drop)}
+  .acts .a{display:flex;align-items:center;gap:11px;padding:14px 16px;font-size:.93rem;
+           color:var(--k);border-bottom:1px solid rgba(7,8,10,.07);font-weight:520}
+  .acts .a:last-child{border-bottom:0}
+  .acts .a.on{font-weight:680}
+  .acts .a .tick{margin-left:auto;font-weight:800}
+  .acts .cancel{margin-top:9px;border-radius:18px;text-align:center;padding:15px;
+                font-size:.95rem;font-weight:720;color:var(--k);
+                background:var(--g-sweep), rgba(255,255,255,.88);
+                -webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);
+                box-shadow:var(--g-lens), var(--g-drop)}
+
+  /* ── searchable picker sheet ──
+     The plain version read as a list on a white box. iOS gives it a
+     proper toolbar, a recessed search field, and rows whose divider
+     starts after the avatar rather than cutting the full width. */
+  .pickr{
+    border-radius:26px 26px 0 0;overflow:hidden;
+    background:var(--g-sweep), rgba(255,255,255,.82);
+    -webkit-backdrop-filter:var(--g-blur-hi); backdrop-filter:var(--g-blur-hi);
+    box-shadow:inset 0 1.5px .5px #fff, 0 -16px 44px -16px rgba(7,8,10,.3);
+  }
+  .pickr .grab{width:36px;height:5px;border-radius:3px;background:rgba(7,8,10,.16);margin:8px auto 2px}
+  .pickr .bar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 12px}
+  .pickr .bar .c{font-size:.875rem;color:var(--k3);font-weight:520}
+  .pickr .bar .t{font-size:.9rem;color:var(--k);font-weight:700;letter-spacing:-.02em}
+  .pickr .bar .d{font-size:.875rem;color:var(--k);font-weight:720}
+
+  .pickr .srch{
+    margin:0 14px 10px;display:flex;align-items:center;gap:8px;
+    background:rgba(7,8,10,.06);border-radius:12px;padding:9px 12px;
+    box-shadow:inset 0 1px 3px rgba(7,8,10,.06);
+  }
+  .pickr .srch svg{width:15px;height:15px;stroke:var(--k4);stroke-width:2.2;fill:none;
+                   stroke-linecap:round;flex:none}
+  .pickr .srch .p{font-size:.86rem;color:var(--k4);font-weight:450;flex:1}
+  .pickr .srch .x{width:17px;height:17px;border-radius:50%;background:rgba(7,8,10,.22);color:#fff;
+                  display:grid;place-items:center;font-size:.6rem;font-weight:800;flex:none}
+
+  .pickr .cnt{font-size:.7rem;color:var(--k4);padding:0 18px 7px;font-weight:550}
+  .pickr .rows2{max-height:252px;overflow:hidden}
+  .pickr .p-row{display:flex;align-items:center;gap:11px;padding:9px 18px;position:relative}
+  /* divider starts after the avatar, the way iOS insets it */
+  .pickr .p-row::after{content:"";position:absolute;left:62px;right:0;bottom:0;height:1px;
+                       background:rgba(7,8,10,.07)}
+  .pickr .p-row:last-child::after{display:none}
+  .pickr .p-row .pa{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;
+                    font-size:.7rem;font-weight:700;color:#fff;background:var(--ink-glass-soft);
+                    box-shadow:inset 0 1.2px .5px rgba(255,255,255,.4)}
+  .pickr .p-row .pn{font-size:.875rem;font-weight:570;color:var(--k);line-height:1.25}
+  .pickr .p-row .pm{font-size:.715rem;color:var(--k3);margin-top:1px}
+  .pickr .p-row .tk{margin-left:auto;font-size:.95rem;font-weight:800;color:var(--k);flex:none}
+  .pickr .p-row.on .pn{font-weight:700}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>UI Components</h1>
+    <p>Every input the HRMS mobile app needs, in each state it can be in. One rule runs
+       through all of them: the field tells you what is wrong before you submit, not after.</p>
+    <p style="margin-top:14px">
+      <a href="mobile.html">← app screens</a> &nbsp;·&nbsp;
+      <a href="index.html">system map</a> &nbsp;·&nbsp;
+      <a href="flowchart.html">flowcharts</a> &nbsp;·&nbsp;
+      <a href="erd.html">entity diagrams</a> &nbsp;·&nbsp;
+      <a href="schema.html">field reference</a></p>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#states">States</a>
+  <a href="#text">Text</a>
+  <a href="#choice">Choice</a>
+  <a href="#special">Date &amp; number</a>
+  <a href="#upload">Upload</a>
+  <a href="#buttons">Buttons</a>
+  <a href="#feedback">Feedback</a>
+  <a href="#form">A whole form</a>
+  <a href="#spec">Spec</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ═══════════════════════════════════ -->
+<section id="states">
+  <h2><span class="n">01</span> The six states</h2>
+  <p class="lede">Every field below is one of these six. Get them right once and the rest of
+     the library is just a different thing in the middle.</p>
+
+  <div class="canvas">
+    <div class="grid">
+      <div class="cell"><div class="st">Empty</div>
+        <label class="f"><span class="lab">Employee code</span>
+          <span class="ctl"><span class="ph">EMP-0000</span></span></label></div>
+
+      <div class="cell"><div class="st">Focused</div>
+        <label class="f focus"><span class="lab">Employee code</span>
+          <span class="ctl"><span class="tx">EMP-00</span><span class="cur"></span></span></label></div>
+
+      <div class="cell"><div class="st">Filled</div>
+        <label class="f"><span class="lab">Employee code</span>
+          <span class="ctl"><span class="tx">EMP-0001</span><span class="ic">✕</span></span></label></div>
+
+      <div class="cell"><div class="st">Valid</div>
+        <label class="f good"><span class="lab">Employee code</span>
+          <span class="ctl"><span class="tx">EMP-0001</span><span class="ic" style="color:var(--ok)">✓</span></span>
+          <span class="help good">Nareth Ravy · Credit Officer</span></label></div>
+
+      <div class="cell"><div class="st">Error</div>
+        <label class="f err"><span class="lab">Employee code <i>*</i></span>
+          <span class="ctl"><span class="tx">EMP-9999</span><span class="ic" style="color:var(--bad)">!</span></span>
+          <span class="help err">No employee with that code.</span></label></div>
+
+      <div class="cell"><div class="st">Disabled</div>
+        <label class="f dis"><span class="lab">Employee code</span>
+          <span class="ctl"><span class="tx">EMP-0001</span><span class="ic">🔒</span></span>
+          <span class="help">Set by HR, not editable here.</span></label></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Error text replaces helper text, never stacks under it.</b> Two lines of grey plus one
+    of red is how a form grows to twice its height on a phone and pushes the submit button
+    off screen. One line under the field, always in the same place.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="text">
+  <h2><span class="n">02</span> Text</h2>
+  <p class="lede">Same box, different contents. The icon on the right is the only thing that
+     changes between most of these.</p>
+
+  <div class="canvas">
+    <div class="grid">
+      <div class="cell"><div class="st">Single line</div>
+        <label class="f"><span class="lab">Full name <i>*</i></span>
+          <span class="ctl"><span class="tx">Nareth Ravy</span></span></label></div>
+
+      <div class="cell"><div class="st">With prefix</div>
+        <label class="f"><span class="lab">Phone</span>
+          <span class="ctl"><span class="ic" style="font-weight:700;color:var(--c-ink)">+855</span>
+            <span class="tx">12 345 678</span></span></label></div>
+
+      <div class="cell"><div class="st">Password</div>
+        <label class="f"><span class="lab">Password</span>
+          <span class="ctl"><span class="tx" style="letter-spacing:.2em">••••••••</span>
+            <span class="ic">👁</span></span></label></div>
+
+      <div class="cell"><div class="st">Search</div>
+        <label class="f"><span class="lab">Find a colleague</span>
+          <span class="ctl" style="border-radius:999px"><span class="ic">🔍</span>
+            <span class="ph">Name or employee code</span></span></label></div>
+
+      <div class="cell"><div class="st">Counted</div>
+        <label class="f"><span class="lab">Reason</span>
+          <span class="ctl" style="align-items:flex-start;min-height:92px">
+            <span class="tx">Family event out of town, returning Sunday evening.</span></span>
+          <span class="help" style="justify-content:space-between"><span>Keep it short.</span>
+            <span style="color:#aab4c4">52 / 200</span></span></label></div>
+
+      <div class="cell"><div class="st">Read only</div>
+        <label class="f"><span class="lab">Branch</span>
+          <span class="ctl" style="background:#f7f9fc;border-style:dashed">
+            <span class="tx">Head Office</span><span class="ic">🏢</span></span>
+          <span class="help">From your employee record.</span></label></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="choice">
+  <h2><span class="n">03</span> Choosing</h2>
+  <p class="lede">A select on iPhone is never a dropdown &mdash; nothing opens downward. The row
+     stays put and something rises from the bottom of the screen. Which thing depends on how many
+     options there are: <b>two or three</b> &rarr; segmented, decided in place. <b>Three or four</b>
+     &rarr; an action sheet. <b>A fixed list</b> &rarr; a wheel. <b>A long list</b> &rarr; a
+     searchable sheet.</p>
+
+  <div class="canvas">
+    <div class="grid">
+      <div class="cell"><div class="st">Segmented · 2–3 options</div>
+        <div class="seg"><div class="on">Full day</div><div>Morning</div><div>Afternoon</div></div>
+        <div class="seg" style="margin-top:12px"><div>👤 Staff</div><div class="on">👥 Operation</div></div></div>
+
+      <div class="cell"><div class="st">Toggle</div>
+        <div class="stack">
+          <div class="opt"><div class="grow" style="flex:1"><div class="ot">Pin to top</div>
+            <div class="os">Keeps it above everything else</div></div><div class="sw on"></div></div>
+          <div class="opt"><div class="grow" style="flex:1"><div class="ot">Send notification</div>
+            <div class="os">Pushes to every phone</div></div><div class="sw"></div></div>
+          <div class="opt" style="opacity:.6"><div class="grow" style="flex:1"><div class="ot">Share with HR</div>
+            <div class="os">Always on for leave</div></div><div class="sw dis"></div></div>
+        </div></div>
+
+      <div class="cell"><div class="st">Radio · pick one</div>
+        <div class="stack">
+          <div class="opt on"><div class="rd on"></div>
+            <div style="flex:1"><div class="ot">Annual leave</div><div class="os">9 days remaining</div></div></div>
+          <div class="opt"><div class="rd"></div>
+            <div style="flex:1"><div class="ot">Sick leave</div><div class="os">Certificate needed over 2 days</div></div></div>
+          <div class="opt"><div class="rd"></div>
+            <div style="flex:1"><div class="ot">Unpaid leave</div><div class="os">Deducted from pay</div></div></div>
+        </div></div>
+
+      <div class="cell"><div class="st">Checkbox · pick any</div>
+        <div class="stack">
+          <div class="opt on"><div class="cb on"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg></div>
+            <div style="flex:1"><div class="ot">Operations</div><div class="os">11 people</div></div></div>
+          <div class="opt"><div class="cb"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg></div>
+            <div style="flex:1"><div class="ot">Finance</div><div class="os">6 people</div></div></div>
+          <div class="opt" style="opacity:.6"><div class="cb dis"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg></div>
+            <div style="flex:1"><div class="ot">Board</div><div class="os">Not yours to send to</div></div></div>
+        </div></div>
+
+      <div class="cell"><div class="st">Select · closed, iOS row</div>
+        <div class="iosgroup">
+          <div class="iosrow"><span class="rl">Leave type</span>
+            <span class="rv">Annual leave</span>
+            <span class="cv"><i></i><i></i></span></div>
+          <div class="iosrow"><span class="rl">Award</span>
+            <span class="rv ph">Choose</span>
+            <span class="cv"><i></i><i></i></span></div>
+          <div class="iosrow"><span class="rl">Branch</span>
+            <span class="rv">Head Office</span>
+            <span class="chev">&#8250;</span></div>
+        </div>
+        <div style="font-size:.73rem;color:var(--k3);margin-top:10px;line-height:1.45">
+          The stacked arrows mean a wheel opens. A single <b>&#8250;</b> means it pushes
+          to a new screen &mdash; the two are not interchangeable on iOS.</div></div>
+
+      <div class="cell"><div class="st">Chips · multi-select</div>
+        <div class="chips">
+          <span class="chip on">Operations <span class="x">✕</span></span>
+          <span class="chip on">Finance <span class="x">✕</span></span>
+          <span class="chip">+ Credit</span><span class="chip">+ IT</span><span class="chip">+ Admin</span>
+        </div>
+        <div class="help" style="font-size:.7rem;color:var(--c-sub);margin-top:10px">
+          Nothing picked means everyone.</div></div>
+    </div>
+
+    <h3 style="color:var(--k);margin-top:34px">What opens when you tap the row</h3>
+    <div style="display:flex;gap:22px;flex-wrap:wrap">
+
+      <div style="width:320px">
+        <div class="st" style="font-size:.72rem;font-weight:640;color:var(--k3);margin-bottom:9px">
+          Wheel &middot; a fixed list</div>
+        <div class="wheel">
+          <div class="bar"><span class="c">Cancel</span><span class="t">Leave type</span><span class="d">Done</span></div>
+          <div class="drum">
+            <div class="sel"></div>
+            <div class="rows">
+              <div class="r d2">Maternity leave</div>
+              <div class="r d1">Sick leave</div>
+              <div class="r on">Annual leave</div>
+              <div class="r d1">Unpaid leave</div>
+              <div class="r d2">Special leave</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:320px">
+        <div class="st" style="font-size:.72rem;font-weight:640;color:var(--k3);margin-bottom:9px">
+          Wheel &middot; two drums for a date</div>
+        <div class="wheel">
+          <div class="bar"><span class="c">Cancel</span><span class="t">Overtime from</span><span class="d">Done</span></div>
+          <div class="drum two">
+            <div class="sel"></div>
+            <div class="rows">
+              <div class="col">
+                <div class="r d2">15</div><div class="r d1">16</div>
+                <div class="r on">17</div><div class="r d1">18</div><div class="r d2">19</div></div>
+              <div class="col">
+                <div class="r d2">00</div><div class="r d1">15</div>
+                <div class="r on">30</div><div class="r d1">45</div><div class="r d2">50</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:320px">
+        <div class="st" style="font-size:.72rem;font-weight:640;color:var(--k3);margin-bottom:9px">
+          Action sheet &middot; three or four options</div>
+        <div class="acts" style="padding:0">
+          <div class="grp">
+            <div class="a on">Annual leave <span class="tick">&#10003;</span></div>
+            <div class="a">Sick leave</div>
+            <div class="a">Unpaid leave</div>
+          </div>
+          <div class="cancel">Cancel</div>
+        </div>
+      </div>
+
+      <div style="width:320px">
+        <div class="st" style="font-size:.72rem;font-weight:640;color:var(--k3);margin-bottom:9px">
+          Searchable sheet &middot; a long list</div>
+        <div class="pickr">
+          <div class="grab"></div>
+          <div class="bar"><span class="c">Cancel</span><span class="t">Colleague</span><span class="d">Done</span></div>
+          <div class="srch">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+            <span class="p">so</span><span class="x">&#10005;</span>
+          </div>
+          <div class="cnt">4 of 142</div>
+          <div class="rows2">
+            <div class="p-row on"><span class="pa">ST</span>
+              <span><span class="pn">Sok Thara</span><span class="pm">Credit Officer &middot; EMP-0002</span></span>
+              <span class="tk">&#10003;</span></div>
+            <div class="p-row"><span class="pa">SK</span>
+              <span><span class="pn">Sok Kosal</span><span class="pm">Branch Manager &middot; EMP-0003</span></span></div>
+            <div class="p-row"><span class="pa">SS</span>
+              <span><span class="pn">Sen Sela</span><span class="pm">Operations &middot; EMP-0013</span></span></div>
+            <div class="p-row"><span class="pa">SM</span>
+              <span><span class="pn">Sok Mealea</span><span class="pm">Teller &middot; EMP-0021</span></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="special">
+  <h2><span class="n">04</span> Dates and numbers</h2>
+  <p class="lede">The ones a plain text box gets wrong. Never ask somebody to type a date on a
+     phone.</p>
+
+  <div class="canvas">
+    <div class="grid">
+      <div class="cell"><div class="st">Date · closed</div>
+        <label class="f"><span class="lab">From <i>*</i></span>
+          <span class="ctl"><span class="tx">20 Oct 2026</span><span class="ic">📅</span></span></label>
+        <label class="f" style="margin-top:12px"><span class="lab">To <i>*</i></span>
+          <span class="ctl"><span class="tx">21 Oct 2026</span><span class="ic">📅</span></span>
+          <span class="help good">2 days · balance drops to 7</span></label></div>
+
+      <div class="cell"><div class="st">Date range · open</div>
+        <div class="card" style="background:#fff;border-radius:16px;padding:14px;box-shadow:var(--e2)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px">
+            <span style="font-size:.8rem;font-weight:750">October 2026</span>
+            <span style="color:var(--c-sub);font-size:.8rem">‹ &nbsp;›</span></div>
+          <div class="cal">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+            <b class="mut">29</b><b class="mut">30</b><b>1</b><b>2</b><b>3</b><b class="mut">4</b><b class="mut">5</b>
+            <b>6</b><b>7</b><b>8</b><b>9</b><b>10</b><b class="mut">11</b><b class="mut">12</b>
+            <b>13</b><b>14</b><b>15</b><b>16</b><b>17</b><b class="mut">18</b><b class="mut">19</b>
+            <b class="on">20</b><b class="on">21</b><b>22</b><b>23</b><b>24</b><b class="mut">25</b><b class="mut">26</b>
+          </div></div></div>
+
+      <div class="cell"><div class="st">Time</div>
+        <label class="f"><span class="lab">Overtime from</span>
+          <span class="ctl"><span class="tx">17:30</span><span class="ic">🕐</span></span></label>
+        <label class="f" style="margin-top:12px"><span class="lab">Overtime to</span>
+          <span class="ctl"><span class="tx">20:30</span><span class="ic">🕐</span></span>
+          <span class="help">3 hours</span></label></div>
+
+      <div class="cell"><div class="st">Stepper · small numbers</div>
+        <label class="f"><span class="lab">Days</span>
+          <div class="step"><i>−</i><span class="v">2</span><i>+</i></div>
+          <span class="help">Whole days only. Use half-day above for part of one.</span></label></div>
+
+      <div class="cell"><div class="st">Currency</div>
+        <label class="f"><span class="lab">Advance amount</span>
+          <span class="ctl"><span class="ic" style="font-weight:800;color:var(--c-ink)">$</span>
+            <span class="tx" style="font-size:1.1rem;font-weight:750">150.00</span>
+            <span class="ic" style="font-weight:700">USD ⌄</span></span>
+          <span class="help">Half of your monthly salary is the limit.</span></label></div>
+
+      <div class="cell"><div class="st">Slider · a percentage</div>
+        <label class="f"><span class="lab">Percent of salary</span>
+          <div class="slider">
+            <div class="track"><div class="fill"></div><div class="knob"></div></div>
+            <div class="sc"><span>0%</span><span style="color:var(--brand);font-weight:750">50%</span><span>100%</span></div>
+          </div></label></div>
+
+      <div class="cell"><div class="st">PIN · clocking in</div>
+        <div class="otp"><b>7</b><b>4</b><b class="on">2</b><b class="empty">–</b><b class="empty">–</b><b class="empty">–</b></div>
+        <div class="help" style="font-size:.7rem;color:var(--c-sub);margin-top:10px">
+          Six digits, sent to your phone.</div></div>
+
+      <div class="cell"><div class="st">Month picker</div>
+        <label class="f"><span class="lab">Payslip period</span>
+          <span class="ctl"><span class="tx">September 2026</span><span class="ic">⌄</span></span></label>
+        <div class="chips" style="margin-top:11px">
+          <span class="chip">Jul</span><span class="chip">Aug</span>
+          <span class="chip on">Sep</span><span class="chip" style="opacity:.45">Oct</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="upload">
+  <h2><span class="n">05</span> Attaching things</h2>
+  <p class="lede">On a phone this is nearly always the camera, not a file browser.</p>
+
+  <div class="canvas">
+    <div class="grid">
+      <div class="cell"><div class="st">Empty</div>
+        <div class="upl"><div class="ui">📎</div>
+          <div class="ut">Add a photo or document</div>
+          <div class="us">Camera or gallery · up to 5 MB</div></div></div>
+
+      <div class="cell"><div class="st">Attached</div>
+        <div class="stack">
+          <div style="display:flex;gap:10px">
+            <div class="thumb"><span class="rm">✕</span></div>
+            <div class="thumb" style="background:linear-gradient(135deg,#d9dbe0,#c8cbd2)"><span class="rm">✕</span></div>
+            <div class="upl" style="padding:0;width:62px;height:62px;display:grid;place-items:center;border-radius:13px">
+              <span style="font-size:1.2rem;color:var(--c-sub)">＋</span></div>
+          </div>
+          <div class="opt"><div class="ic" style="font-size:1.1rem">📄</div>
+            <div style="flex:1"><div class="ot">medical-certificate.pdf</div>
+              <div class="os">412 KB · attached</div></div>
+            <span class="ic" style="color:var(--bad)">✕</span></div>
+        </div></div>
+
+      <div class="cell"><div class="st">Uploading</div>
+        <div class="opt"><div class="ic" style="font-size:1.1rem">📄</div>
+          <div style="flex:1"><div class="ot">scan-001.jpg</div>
+            <div class="slider" style="padding:6px 0 0">
+              <div class="track" style="height:5px"><div class="fill" style="width:68%"></div></div></div>
+            <div class="os" style="margin-top:5px">68% · 1.2 MB of 1.8 MB</div></div></div>
+        <div class="opt" style="margin-top:12px;border-color:var(--bad);background:#fffafa">
+          <div class="ic" style="font-size:1.1rem;color:var(--bad)">⚠</div>
+          <div style="flex:1"><div class="ot">big-photo.heic</div>
+            <div class="os" style="color:#0b0b0d">Too large — 8.4 MB. Try again at a lower size.</div></div>
+          <span class="ic" style="color:var(--brand);font-weight:700">↻</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="buttons">
+  <h2><span class="n">06</span> Buttons</h2>
+  <p class="lede">One primary action per screen. If two things look equally important, neither
+     is.</p>
+
+  <div class="canvas">
+    <div class="grid">
+      <div class="cell"><div class="st">Primary</div>
+        <div class="stack">
+          <button class="btn w">Submit request</button>
+          <button class="btn w g">Approve</button>
+          <button class="btn w r">Reject</button>
+        </div></div>
+
+      <div class="cell"><div class="st">Secondary</div>
+        <div class="stack">
+          <button class="btn w o">Save as draft</button>
+          <button class="btn w ghost">Cancel</button>
+          <button class="btn w dis">Submit request</button>
+        </div></div>
+
+      <div class="cell"><div class="st">Working / small / floating</div>
+        <div class="stack">
+          <button class="btn w load"><span class="spin"></span> Submitting…</button>
+          <div style="display:flex;gap:9px">
+            <button class="btn sm g" style="flex:1">Approve</button>
+            <button class="btn sm o" style="flex:1">Reject</button></div>
+          <div style="display:flex;align-items:center;gap:13px;margin-top:3px">
+            <div class="fab">＋</div>
+            <span style="font-size:.76rem;color:var(--c-sub)">Floating — one per screen,<br>bottom right</span></div>
+        </div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Destructive actions are never the easiest tap.</b> Reject is outlined next to a filled
+    Approve, so the thumb lands on the safe one. The only filled red button in the app is on a
+    confirmation sheet, after you have already said what you want.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="feedback">
+  <h2><span class="n">07</span> Telling people what happened</h2>
+  <p class="lede">A form that fails silently is the single commonest complaint about internal
+     software.</p>
+
+  <div class="canvas">
+    <div class="grid">
+      <div class="cell"><div class="st">Toasts</div>
+        <div class="stack">
+          <div class="toast ok"><span style="font-size:1.1rem">✓</span>
+            <div><div class="tt">Request sent</div><div class="ts">With Sok Kosal for approval</div></div></div>
+          <div class="toast bad"><span style="font-size:1.1rem">✕</span>
+            <div><div class="tt">Could not clock in</div><div class="ts">You are 1.2 km from the branch</div></div></div>
+          <div class="toast info"><span style="font-size:1.1rem">↻</span>
+            <div><div class="tt">Saved offline</div><div class="ts">Will send when you have signal</div></div></div>
+        </div></div>
+
+      <div class="cell"><div class="st">Inline on the form</div>
+        <div class="stack">
+          <div class="opt" style="border-color:var(--bad);background:#fffafa">
+            <div class="ic" style="color:var(--bad);font-size:1.05rem">!</div>
+            <div style="flex:1"><div class="ot" style="color:#0b0b0d">2 things to fix</div>
+              <div class="os">Leave type is empty · end date is before start</div></div></div>
+          <div class="opt" style="border-color:var(--ok);background:#f7fdfa">
+            <div class="ic" style="color:var(--ok);font-size:1.05rem">✓</div>
+            <div style="flex:1"><div class="ot" style="color:#0b0b0d">Ready to send</div>
+              <div class="os">2 days · balance drops to 7</div></div></div>
+        </div></div>
+
+      <div class="cell"><div class="st">Confirm before something irreversible</div>
+        <div class="sheet">
+          <div class="gr"></div>
+          <div style="padding:4px 18px 16px;text-align:center">
+            <div style="width:50px;height:50px;border-radius:17px;background:var(--bad-soft);color:var(--bad);
+                        display:grid;place-items:center;font-size:1.3rem;margin:0 auto 11px">⚠</div>
+            <div style="font-size:.95rem;font-weight:750">Cancel this request?</div>
+            <div style="font-size:.78rem;color:var(--c-sub);margin-top:5px;line-height:1.5">
+              It has already been approved by your manager. Cancelling sends it back to the start.</div>
+            <div style="display:flex;gap:9px;margin-top:16px">
+              <button class="btn o" style="flex:1">Keep it</button>
+              <button class="btn r" style="flex:1">Cancel it</button></div>
+          </div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="form">
+  <h2><span class="n">08</span> Put together</h2>
+  <p class="lede">The leave request form, built only from the pieces above.</p>
+
+  <div class="canvas" style="max-width:380px">
+    <div class="stack">
+      <div style="font-size:1.1rem;font-weight:780;letter-spacing:-.025em">Request leave</div>
+
+      <label class="f"><span class="lab">Leave type <i>*</i></span>
+        <span class="ctl"><span class="tx">Annual leave</span><span class="ic">⌄</span></span></label>
+
+      <div style="display:flex;gap:11px">
+        <label class="f" style="flex:1"><span class="lab">From <i>*</i></span>
+          <span class="ctl"><span class="tx">20 Oct</span><span class="ic">📅</span></span></label>
+        <label class="f" style="flex:1"><span class="lab">To <i>*</i></span>
+          <span class="ctl"><span class="tx">21 Oct</span><span class="ic">📅</span></span></label>
+      </div>
+
+      <div><div class="lab" style="font-size:.68rem;font-weight:750;color:var(--c-sub);letter-spacing:.05em;
+                 text-transform:uppercase;margin-bottom:6px">Half day?</div>
+        <div class="seg"><div class="on">No</div><div>Morning</div><div>Afternoon</div></div></div>
+
+      <label class="f focus"><span class="lab">Reason <i>*</i></span>
+        <span class="ctl" style="align-items:flex-start;min-height:76px">
+          <span class="tx">Family event out of town</span><span class="cur"></span></span>
+        <span class="help" style="justify-content:space-between"><span>Your manager sees this.</span>
+          <span style="color:#aab4c4">24 / 200</span></span></label>
+
+      <div class="upl" style="padding:14px"><div class="ui" style="width:36px;height:36px;font-size:1rem">📎</div>
+        <div class="ut" style="font-size:.8rem">Attach something (optional)</div></div>
+
+      <div class="opt on" style="background:linear-gradient(135deg,#fff,#f7f8ff)">
+        <div class="ic" style="color:var(--ok);font-size:1.05rem">✓</div>
+        <div style="flex:1"><div class="ot">2 days · balance drops to 7</div>
+          <div class="os">Goes to Sok Kosal, then HR</div></div></div>
+
+      <button class="btn w">Submit request</button>
+      <button class="btn w ghost">Save as draft</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ -->
+<section id="spec">
+  <h2><span class="n">09</span> The numbers</h2>
+  <p class="lede">So two people building different screens end up with the same thing.</p>
+
+  <table>
+    <thead><tr><th style="width:26%">Token</th><th style="width:22%">Value</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td><b>Field height</b></td><td><code>48px</code> min</td><td>Below 44px a thumb misses it. Textareas grow from here.</td></tr>
+      <tr><td><b>Corner radius</b></td><td><code>14px</code> fields · <code>999px</code> chips</td><td>Cards 17px, sheets 22px, phone 46px.</td></tr>
+      <tr><td><b>Border</b></td><td><code>1.5px</code> <code>#e3e9f2</code></td><td>Brand on focus, red on error, green when validated.</td></tr>
+      <tr><td><b>Focus ring</b></td><td><code>4px</code> at 14% opacity</td><td>Outside the border, never replacing it — colour alone is not enough.</td></tr>
+      <tr><td><b>Label</b></td><td><code>.68rem</code> · 750 · uppercase</td><td>Above the field. Never a placeholder standing in for a label.</td></tr>
+      <tr><td><b>Help / error</b></td><td><code>.70rem</code>, one line</td><td>Error replaces help in the same slot, so nothing shifts.</td></tr>
+      <tr><td><b>Gap between fields</b></td><td><code>14px</code></td><td>22px between groups.</td></tr>
+      <tr><td><b>Tap target</b></td><td><code>44px</code> minimum</td><td>Applies to the ✕ in a chip and the toggle, not just buttons.</td></tr>
+      <tr><td><b>Required mark</b></td><td>Red <code>*</code> on the label</td><td>Marked on required, not on optional — most fields are required.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Two rules that are not about pixels.</b> A placeholder is never a label — it vanishes
+    the moment someone types, and they lose track of which box they are in. And validate when
+    a field loses focus, not on every keystroke: turning a field red while somebody is still
+    halfway through typing their own name is the fastest way to make an app feel hostile.
+  </div>
+</section>
+
+</div>
+
+<footer><div class="wrap">Component design only. Nine groups, six states, one spec table —
+  everything the HRMS mobile screens are assembled from.</div></footer>
+
+</body>
+</html>

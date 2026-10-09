@@ -1,0 +1,2511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HRMS Mobile — Screens</title>
+<style>
+  :root{
+    --bg:#070b14; --bg2:#0d1322;
+    --panel:rgba(255,255,255,.055); --panel-line:rgba(255,255,255,.1);
+    --ink:#eef2fa; --muted:#9dabc4; --faint:#6b7a93;
+    --line:rgba(255,255,255,.09);
+
+    --brand:#6366f1; --brand2:#a855f7; --brand3:#22d3ee;
+    --brand-soft:#eef0ff;
+    --ok:#10b981; --ok-soft:#e6f9f1;
+    --warn:#f59e0b; --warn-soft:#fef5e4;
+    --bad:#ef4444; --bad-soft:#fdeded;
+    --gold:#eab308; --silver:#94a3b8; --bronze:#d97706;
+
+    /* inside the phone — stays light, that is the product */
+    --s-bg:#f4f6fc; --s-card:#ffffff; --s-ink:#131a2a; --s-sub:#78859c; --s-line:#eef1f7;
+
+    --e1:0 1px 2px rgba(10,15,30,.05), 0 2px 6px -2px rgba(10,15,30,.06);
+    --e2:0 2px 4px rgba(10,15,30,.05), 0 8px 18px -8px rgba(10,15,30,.14);
+    --e3:0 4px 10px rgba(10,15,30,.06), 0 18px 36px -14px rgba(10,15,30,.2);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:74px}
+  body{
+    margin:0;color:var(--ink);background:var(--bg);
+    font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  /* mesh behind everything — gives the page depth without an image */
+  body::before{
+    content:"";position:fixed;inset:-20% -10%;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(42rem 30rem at 12% 2%,  rgba(99,102,241,.30), transparent 62%),
+      radial-gradient(38rem 28rem at 88% 10%, rgba(168,85,247,.24), transparent 62%),
+      radial-gradient(44rem 32rem at 70% 72%, rgba(34,211,238,.14), transparent 64%),
+      radial-gradient(40rem 30rem at 18% 88%, rgba(16,185,129,.12), transparent 62%);
+    filter:blur(10px);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:58px 58px;
+    -webkit-mask-image:radial-gradient(70% 55% at 50% 30%,#000,transparent 85%);
+            mask-image:radial-gradient(70% 55% at 50% 30%,#000,transparent 85%);
+  }
+  .wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+
+  /* ── header ── */
+  header{padding:62px 0 48px;position:relative}
+  header h1{
+    margin:0 0 10px;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.04;letter-spacing:-.035em;font-weight:800;
+    background:linear-gradient(104deg,#fff 10%,#c7d2fe 46%,#a855f7 76%,#22d3ee 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header p{margin:0;color:#aab6ce;max-width:62ch;font-size:1.01rem}
+  header a{color:#c7d2fe;text-decoration:none;border-bottom:1px solid rgba(199,210,254,.32);font-size:.86rem}
+  header a:hover{color:#fff;border-bottom-color:#fff}
+  header .counts{margin-top:22px;display:flex;gap:9px;flex-wrap:wrap;font-size:.76rem}
+  header .counts span{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:999px;
+    padding:7px 15px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#d7def0;font-weight:500;
+  }
+
+  /* ── nav ── */
+  nav{
+    position:sticky;top:0;z-index:70;
+    background:rgba(7,11,20,.72);backdrop-filter:blur(22px) saturate(1.5);
+    -webkit-backdrop-filter:blur(22px) saturate(1.5);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:9px;padding-bottom:9px}
+  nav .wrap::-webkit-scrollbar{display:none}
+  nav a{
+    color:var(--muted);text-decoration:none;padding:9px 16px;font-size:.84rem;font-weight:600;
+    white-space:nowrap;border-radius:999px;border:1px solid transparent;transition:.18s;
+  }
+  nav a:hover{color:#fff;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1)}
+
+  /* ── sections ── */
+  section{padding:66px 0 14px}
+  h2{margin:0 0 9px;font-size:1.55rem;letter-spacing:-.025em;font-weight:750;display:flex;align-items:center;gap:13px}
+  h2 .n{
+    font-size:.7rem;font-weight:800;letter-spacing:.1em;color:#fff;padding:6px 11px;border-radius:9px;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    box-shadow:0 6px 18px -6px rgba(99,102,241,.8), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .lede{color:var(--muted);margin:0 0 34px;max-width:80ch;font-size:.97rem}
+  .lede b{color:#dbe3f5}
+
+  /* ── the 3D rack ── */
+  .rail{display:flex;gap:46px;flex-wrap:wrap;perspective:2400px;perspective-origin:50% 40%}
+  .unit{width:300px;transform-style:preserve-3d}
+
+  .phone{
+    position:relative;width:300px;height:620px;border-radius:46px;padding:10px;
+    background:
+      linear-gradient(145deg,#4a5368 0%,#222838 26%,#11151f 60%,#2b3346 100%);
+    box-shadow:
+      0 2px 3px rgba(0,0,0,.5),
+      0 30px 60px -22px rgba(0,0,0,.85),
+      0 60px 90px -40px rgba(79,70,229,.45),
+      inset 0 0 0 1.5px rgba(255,255,255,.14),
+      inset 0 2px 1px rgba(255,255,255,.22),
+      inset 0 -2px 2px rgba(0,0,0,.6);
+    transform:rotateY(-13deg) rotateX(5deg) translateZ(0);
+    transform-origin:50% 50%;
+    transition:transform .55s cubic-bezier(.19,1,.22,1), box-shadow .55s cubic-bezier(.19,1,.22,1);
+    will-change:transform;
+  }
+  .unit:nth-child(even) .phone{transform:rotateY(11deg) rotateX(5deg)}
+  .unit:hover .phone{
+    transform:rotateY(0deg) rotateX(0deg) translateY(-12px) scale(1.035);
+    box-shadow:
+      0 2px 3px rgba(0,0,0,.5),
+      0 44px 80px -24px rgba(0,0,0,.9),
+      0 80px 120px -46px rgba(99,102,241,.7),
+      inset 0 0 0 1.5px rgba(255,255,255,.2),
+      inset 0 2px 1px rgba(255,255,255,.28),
+      inset 0 -2px 2px rgba(0,0,0,.6);
+  }
+  /* side buttons */
+  .phone::before,.phone::after{
+    content:"";position:absolute;left:-2.5px;width:3px;border-radius:3px;
+    background:linear-gradient(90deg,#39415a,#161b27);
+  }
+  .phone::before{top:128px;height:34px}
+  .phone::after{top:176px;height:58px}
+
+  .screen{
+    position:relative;width:100%;height:100%;border-radius:37px;overflow:hidden;
+    background:var(--s-bg);display:flex;flex-direction:column;color:var(--s-ink);
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);
+  }
+  /* glass sheen across the glass */
+  .screen::after{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:9;border-radius:37px;
+    background:linear-gradient(118deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.07) 22%,transparent 46%);
+    mix-blend-mode:overlay;
+  }
+  .notch{
+    position:absolute;top:11px;left:50%;transform:translateX(-50%);width:98px;height:26px;
+    background:#080a10;border-radius:16px;z-index:8;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  }
+
+  .sbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 4px;
+        font-size:11.5px;font-weight:700;flex:none;letter-spacing:.01em}
+  .sbar .ic{display:flex;gap:5px;align-items:center}
+  .sbar .bat{width:18px;height:9.5px;border:1.3px solid currentColor;border-radius:3px;position:relative;opacity:.85}
+  .sbar .bat::after{content:"";position:absolute;inset:1.6px;right:5px;background:currentColor;border-radius:1px}
+  .sbar .bat::before{content:"";position:absolute;right:-3px;top:2.6px;width:1.6px;height:4px;background:currentColor;border-radius:0 1px 1px 0}
+
+  .appbar{padding:6px 17px 13px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .appbar h3{margin:0;font-size:1.12rem;font-weight:780;letter-spacing:-.028em}
+  .appbar .sub{font-size:.69rem;color:var(--s-sub);font-weight:500;margin-top:1px}
+  .appbar .round{
+    width:33px;height:33px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:.84rem;
+    background:linear-gradient(145deg,#fff,#eef1f8);
+    box-shadow:var(--e1), inset 0 1px 0 #fff, inset 0 -1px 0 rgba(10,15,30,.05);
+  }
+
+  .body{flex:1;overflow:hidden;padding:0 15px 10px;display:flex;flex-direction:column;gap:11px}
+
+  /* frosted tab bar */
+  .tabs{
+    flex:none;display:flex;padding:9px 5px 11px;position:relative;z-index:7;
+    background:rgba(255,255,255,.82);backdrop-filter:blur(20px) saturate(1.8);
+    -webkit-backdrop-filter:blur(20px) saturate(1.8);
+    box-shadow:0 -1px 0 rgba(10,15,30,.07), 0 -12px 26px -16px rgba(10,15,30,.3);
+  }
+  .tabs div{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;
+            color:var(--s-sub);font-weight:650;letter-spacing:.01em;position:relative}
+  .tabs div.on{color:var(--brand)}
+  .tabs div.on::before{
+    content:"";position:absolute;top:-9px;width:26px;height:3px;border-radius:0 0 4px 4px;
+    background:linear-gradient(90deg,var(--brand),var(--brand2));
+    box-shadow:0 3px 12px rgba(99,102,241,.8);
+  }
+  .tabs svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ── surfaces ── */
+  .card{
+    background:linear-gradient(170deg,#fff,#fbfcfe);border-radius:17px;padding:14px;
+    box-shadow:var(--e2), inset 0 1px 0 #fff;
+    border:1px solid rgba(10,15,30,.045);
+  }
+  .hero{
+    position:relative;border-radius:21px;padding:17px;color:#fff;overflow:hidden;
+    background:linear-gradient(135deg,var(--brand) 0%,#7c3aed 52%,var(--brand2) 100%);
+    box-shadow:0 10px 24px -10px rgba(99,102,241,.85), 0 2px 5px rgba(10,15,30,.12),
+               inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .hero::before{
+    content:"";position:absolute;top:-56%;right:-22%;width:190px;height:190px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.32),transparent 68%);
+  }
+  .hero > *{position:relative}
+  .hero .lbl{font-size:.63rem;text-transform:uppercase;letter-spacing:.13em;opacity:.85;font-weight:650}
+  .hero .big{font-size:2.05rem;font-weight:820;letter-spacing:-.035em;line-height:1.05;margin-top:4px;
+             text-shadow:0 2px 10px rgba(0,0,0,.18)}
+  .hero .sm{font-size:.73rem;opacity:.92;margin-top:4px}
+
+  .row{display:flex;align-items:center;gap:10px}
+  .av{
+    width:35px;height:35px;border-radius:50%;flex:none;display:grid;place-items:center;
+    font-size:.73rem;font-weight:750;color:#fff;
+    box-shadow:0 3px 9px -2px rgba(10,15,30,.35), inset 0 1px 0 rgba(255,255,255,.4),
+               inset 0 -2px 4px rgba(0,0,0,.14);
+  }
+  .av.s{width:29px;height:29px;font-size:.64rem}
+  .av.l{width:48px;height:48px;font-size:.9rem}
+  .nm{font-size:.81rem;font-weight:650;line-height:1.25;letter-spacing:-.01em}
+  .mt{font-size:.69rem;color:var(--s-sub);line-height:1.4}
+  .grow{flex:1;min-width:0}
+  .ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .pill{font-size:.6rem;font-weight:750;padding:4px 9px;border-radius:999px;letter-spacing:.035em;
+        white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  .p-ok{background:var(--ok-soft);color:#0a7d58} .p-warn{background:var(--warn-soft);color:#b4730c}
+  .p-bad{background:var(--bad-soft);color:#c62f2f} .p-brand{background:var(--brand-soft);color:#4f46e5}
+  .p-grey{background:#eef1f6;color:var(--s-sub)}
+
+  .sechead{font-size:.67rem;font-weight:780;color:var(--s-sub);text-transform:uppercase;letter-spacing:.11em;
+           margin:5px 3px -2px;display:flex;justify-content:space-between;align-items:center}
+  .sechead a{color:var(--brand);text-decoration:none;font-size:.66rem;letter-spacing:.02em}
+
+  .btn{
+    background:linear-gradient(135deg,var(--brand),#7c3aed);color:#fff;border:0;border-radius:14px;
+    padding:13px;width:100%;font-size:.84rem;font-weight:750;text-align:center;letter-spacing:-.01em;
+    box-shadow:0 8px 18px -8px rgba(99,102,241,.9), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .btn.g{background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 8px 18px -8px rgba(16,185,129,.9), inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn.r{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 8px 18px -8px rgba(239,68,68,.9), inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn.o{background:#fff;color:var(--brand);border:1.5px solid rgba(99,102,241,.3);box-shadow:var(--e1)}
+
+  .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  .quick div{
+    background:linear-gradient(170deg,#fff,#fafbfe);border-radius:16px;padding:11px 4px;text-align:center;
+    box-shadow:var(--e2), inset 0 1px 0 #fff;border:1px solid rgba(10,15,30,.045);
+  }
+  .quick .qi{
+    width:31px;height:31px;border-radius:11px;margin:0 auto 6px;display:grid;place-items:center;font-size:.85rem;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 2px 6px -2px rgba(10,15,30,.18);
+  }
+  .quick span{font-size:.59rem;font-weight:650;color:var(--s-sub);display:block;line-height:1.2}
+
+  .list{display:flex;flex-direction:column;gap:8px}
+  .li{
+    background:linear-gradient(170deg,#fff,#fbfcfe);border-radius:14px;padding:11px 12px;
+    box-shadow:var(--e1), inset 0 1px 0 #fff;border:1px solid rgba(10,15,30,.04);
+  }
+
+  .podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;padding:8px 0 2px}
+  .pod{text-align:center;flex:1}
+  .pod .av{margin:0 auto 6px;border:3px solid #fff;
+           box-shadow:0 6px 16px -4px rgba(10,15,30,.35), inset 0 1px 0 rgba(255,255,255,.4)}
+  .pod .base{border-radius:12px 12px 0 0;padding:8px 3px 9px;color:#fff;
+             box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 -4px 14px -6px rgba(10,15,30,.4)}
+  .pod .rk{font-size:1.1rem;font-weight:850;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.25)}
+  .pod .tm{font-size:.62rem;opacity:.95;margin-top:2px}
+  .pod .who{font-size:.65rem;font-weight:750;margin-bottom:5px;line-height:1.2}
+
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal span{font-size:.56rem;color:var(--s-sub);text-align:center;font-weight:750}
+  .cal b{aspect-ratio:1;border-radius:9px;display:grid;place-items:center;font-size:.65rem;font-weight:650;
+         background:#f1f4f9;color:var(--s-sub);box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+  .cal b.ok{background:var(--ok-soft);color:#0a7d58}
+  .cal b.late{background:var(--warn-soft);color:#b4730c}
+  .cal b.abs{background:var(--bad-soft);color:#c62f2f}
+  .cal b.off{background:transparent;color:#c8d0dc;box-shadow:none}
+  .cal b.now{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;
+             box-shadow:0 5px 13px -4px rgba(99,102,241,.9), inset 0 1px 0 rgba(255,255,255,.35)}
+
+  .kv{display:flex;justify-content:space-between;font-size:.75rem;padding:5px 0}
+  .kv span{color:var(--s-sub)} .kv b{font-weight:650}
+  .kv.tot{border-top:1.5px dashed #dde3ec;margin-top:5px;padding-top:9px;font-size:.86rem}
+
+  .field{background:linear-gradient(170deg,#fff,#fbfcfe);border-radius:14px;padding:10px 12px;
+         box-shadow:var(--e1), inset 0 1px 0 #fff;border:1px solid rgba(10,15,30,.04)}
+  .field .fl{font-size:.59rem;color:var(--s-sub);font-weight:750;text-transform:uppercase;letter-spacing:.08em}
+  .field .fv{font-size:.83rem;font-weight:650;margin-top:3px}
+
+  /* ── staff / operation switch ── */
+  .modesw{display:inline-flex;background:#e7ebf3;border-radius:999px;padding:3px;gap:3px;flex:none;
+          box-shadow:inset 0 2px 5px rgba(10,15,30,.09)}
+  .modesw span{font-size:.64rem;font-weight:750;padding:5px 12px;border-radius:999px;color:var(--s-sub);
+               white-space:nowrap;display:flex;align-items:center;gap:4px}
+  .modesw span.on{background:#fff;color:var(--brand);
+                  box-shadow:0 2px 7px -2px rgba(10,15,30,.28), inset 0 1px 0 #fff}
+  .modesw.dark{background:rgba(255,255,255,.18)}
+  .modesw.dark span{color:rgba(255,255,255,.78)}
+  .modesw.dark span.on{background:#fff;color:var(--brand)}
+
+  .mgrbar{
+    display:flex;align-items:center;justify-content:space-between;gap:9px;color:#fff;
+    border-radius:16px;padding:11px 13px;flex:none;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,var(--brand),#7c3aed 55%,var(--brand2));
+    box-shadow:0 9px 22px -10px rgba(99,102,241,.9), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .mgrbar .t{font-size:.74rem;font-weight:750}
+  .mgrbar .s{font-size:.63rem;opacity:.88;margin-top:1px}
+
+  /* ── mode dropdown ── */
+  .mode{background:linear-gradient(170deg,#fff,#fbfcfe);border-radius:17px;overflow:hidden;
+        box-shadow:var(--e2), inset 0 1px 0 #fff;border:1px solid rgba(10,15,30,.045)}
+  .mode .pick{display:flex;align-items:center;gap:11px;padding:12px 13px}
+  .mode .pick .ico{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;font-size:.92rem;flex:none;
+                   background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;
+                   box-shadow:0 5px 13px -4px rgba(99,102,241,.85), inset 0 1px 0 rgba(255,255,255,.35)}
+  .mode .pick .cv{flex:1;min-width:0}
+  .mode .pick .cv .k{font-size:.59rem;color:var(--s-sub);font-weight:750;text-transform:uppercase;letter-spacing:.09em}
+  .mode .pick .cv .v{font-size:.85rem;font-weight:750;margin-top:2px;letter-spacing:-.01em}
+  .mode .pick .ch{color:#b4bfcf;font-size:.8rem;flex:none}
+  .mode .opts{border-top:1px solid var(--s-line);background:linear-gradient(180deg,#f8fafd,#f4f7fb)}
+  .mode .opt{display:flex;align-items:center;gap:11px;padding:11px 13px;border-bottom:1px solid var(--s-line)}
+  .mode .opt:last-child{border-bottom:0}
+  .mode .opt .rad{width:18px;height:18px;border-radius:50%;border:2px solid #cbd5e3;flex:none;position:relative;background:#fff}
+  .mode .opt.on .rad{border-color:var(--brand);box-shadow:0 0 0 4px rgba(99,102,241,.13)}
+  .mode .opt.on .rad::after{content:"";position:absolute;inset:3px;border-radius:50%;
+                            background:linear-gradient(135deg,var(--brand),var(--brand2))}
+  .mode .opt .ot{font-size:.81rem;font-weight:700}
+  .mode .opt .os{font-size:.67rem;color:var(--s-sub);margin-top:1px}
+  .mode .opt.on .ot{color:var(--brand)}
+
+  /* ── clock-in method chooser ── */
+  .meth{display:flex;gap:5px;background:#e7ebf3;border-radius:14px;padding:4px;flex:none;
+        box-shadow:inset 0 2px 5px rgba(10,15,30,.09)}
+  .meth div{flex:1;text-align:center;padding:8px 2px;border-radius:11px;font-size:.68rem;font-weight:750;color:var(--s-sub)}
+  .meth div.on{background:linear-gradient(135deg,var(--brand),#7c3aed);color:#fff;
+               box-shadow:0 5px 13px -5px rgba(99,102,241,.95), inset 0 1px 0 rgba(255,255,255,.3)}
+  .meth div i{display:block;font-size:1rem;font-style:normal;margin-bottom:2px}
+
+  /* ── camera ── */
+  .cam{position:relative;flex:1;border-radius:20px;overflow:hidden;
+       background:radial-gradient(130% 90% at 50% 38%,#49536a 0%,#1d2330 62%,#0c0f16 100%);
+       box-shadow:inset 0 0 44px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.07)}
+  .cam .reticle{position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);width:162px;height:162px}
+  .cam .reticle i{position:absolute;width:32px;height:32px;border:3.5px solid #fff;border-radius:7px;
+                  box-shadow:0 0 14px rgba(255,255,255,.45)}
+  .cam .reticle i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0}
+  .cam .reticle i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0}
+  .cam .reticle i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0}
+  .cam .reticle i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0}
+  .cam .beam{position:absolute;left:8px;right:8px;top:46%;height:2.5px;border-radius:3px;
+             background:linear-gradient(90deg,transparent,#34d399,transparent);box-shadow:0 0 20px #34d399}
+  .cam .hint{position:absolute;left:0;right:0;bottom:17px;text-align:center;color:#fff;font-size:.73rem;
+             text-shadow:0 1px 6px rgba(0,0,0,.75);padding:0 22px;line-height:1.5}
+  .cam .torch{position:absolute;top:13px;right:13px;width:34px;height:34px;border-radius:50%;
+              background:rgba(255,255,255,.17);display:grid;place-items:center;font-size:.88rem;
+              backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+              box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+  .cam .face{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);
+             width:150px;height:192px;border:3.5px solid rgba(255,255,255,.9);border-radius:50% 50% 48% 48%}
+  .cam .face.ok{border-color:#34d399;box-shadow:0 0 34px -2px rgba(52,211,153,.8), inset 0 0 34px -10px rgba(52,211,153,.5)}
+  .cam .head{position:absolute;top:50%;left:50%;transform:translate(-50%,-56%);opacity:.26}
+  .cam .dots i{position:absolute;width:4.5px;height:4.5px;border-radius:50%;background:#34d399;
+               box-shadow:0 0 8px #34d399}
+  .cam .liv{position:absolute;left:15px;right:15px;top:15px;display:flex;gap:5px}
+  .cam .liv b{flex:1;height:3.5px;border-radius:3px;background:rgba(255,255,255,.26)}
+  .cam .liv b.on{background:#34d399;box-shadow:0 0 10px rgba(52,211,153,.9)}
+
+  .qr{display:block;width:100%;height:auto}
+
+  /* ── captions under each phone ── */
+  .cap{margin-top:20px}
+  .cap b{display:block;font-size:.97rem;color:#f1f5fc;letter-spacing:-.015em;font-weight:700}
+  .cap span{display:block;color:var(--muted);font-size:.82rem;line-height:1.6;margin-top:4px}
+  .cap em{color:#c3cde2;font-style:normal}
+
+  /* ── page furniture ── */
+  .note{
+    border-left:3px solid var(--brand);border-radius:0 16px 16px 0;padding:16px 20px;margin:26px 0;
+    font-size:.92rem;color:#cfd8ea;
+    background:linear-gradient(100deg,rgba(99,102,241,.16),rgba(168,85,247,.07));
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-top:1px solid rgba(255,255,255,.07);border-right:1px solid rgba(255,255,255,.05);
+    border-bottom:1px solid rgba(255,255,255,.05);
+  }
+  .note b{color:#c7d2fe}
+  table{
+    width:100%;border-collapse:separate;border-spacing:0;font-size:.88rem;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);
+     padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.09);font-weight:750;
+     background:rgba(255,255,255,.03)}
+  td{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.055);vertical-align:top;color:#c3cde2}
+  td b{color:#eef2fa}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover td{background:rgba(255,255,255,.025)}
+  code{font:.83em ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(255,255,255,.08);
+       border-radius:6px;padding:2px 6px;color:#c7d2fe}
+  footer{margin-top:72px;padding:32px 0 60px;border-top:1px solid rgba(255,255,255,.08);
+         color:var(--faint);font-size:.82rem}
+
+  @media (prefers-reduced-motion:reduce){
+    .phone,.unit:hover .phone{transition:none;transform:none}
+  }
+  @media (max-width:760px){
+    .rail{gap:34px;perspective:none}
+    .phone,.unit:nth-child(even) .phone{transform:none}
+    .unit:hover .phone{transform:translateY(-6px)}
+    header{padding:40px 0 32px}
+    section{padding:44px 0 10px}
+  }
+  @media print{
+    body{background:#fff;color:#111} body::before,body::after{display:none}
+    nav{display:none} .phone{transform:none;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+    .cap b{color:#111} .cap span,td,.note{color:#333} table{background:#fff}
+    .unit{break-inside:avoid}
+  }
+
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     LIQUID GLASS — MONOCHROME
+
+     No hue anywhere. White, black, and the greys between them. Glass
+     still needs variation behind it to read as glass, so the backdrop
+     is a soft neutral gradient rather than a flat white — the panels
+     refract light and shade instead of colour.
+
+     Emphasis is carried by fill and weight, not by hue: a filled black
+     control is primary, an outlined one is not.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  :root{
+    --k:#0b0b0d;          /* ink / primary    */
+    --k2:#3a3d44;         /* secondary text   */
+    --k3:#6e737d;         /* tertiary         */
+    --k4:#9aa0aa;         /* placeholder      */
+
+    --g-blur:blur(40px) saturate(150%) brightness(1.06);
+    --g-blur-hi:blur(54px) saturate(170%) brightness(1.1);
+    --g-sweep:linear-gradient(138deg,rgba(255,255,255,.62) 0%,rgba(255,255,255,.2) 26%,
+                              rgba(255,255,255,.04) 54%,rgba(255,255,255,.14) 100%);
+    --g-fill:rgba(255,255,255,.3);
+    --g-fill-hi:rgba(255,255,255,.46);
+    --g-lens:
+      inset 0 1.4px .5px rgba(255,255,255,1),
+      inset 1.4px 0 .5px rgba(255,255,255,.6),
+      inset -1.2px 0 .5px rgba(255,255,255,.34),
+      inset 0 -1.2px .5px rgba(255,255,255,.46);
+    --g-drop:0 2px 6px -2px rgba(11,11,13,.08), 0 14px 38px -12px rgba(11,11,13,.22);
+    --rad:26px;
+  }
+
+  /* neutral backdrop — light and shade for the glass to bend */
+  .screen{
+    background:
+      radial-gradient(46% 32% at 16% 4%,   rgba(11,11,13,.13), transparent 66%),
+      radial-gradient(42% 28% at 92% 10%,  rgba(11,11,13,.09), transparent 66%),
+      radial-gradient(48% 32% at 78% 54%,  rgba(11,11,13,.11), transparent 66%),
+      radial-gradient(44% 30% at 6% 62%,   rgba(11,11,13,.07), transparent 66%),
+      radial-gradient(54% 34% at 50% 102%, rgba(11,11,13,.12), transparent 64%),
+      linear-gradient(170deg,#ffffff 0%,#f0f1f3 52%,#e9eaed 100%);
+  }
+
+  /* every surface */
+  .card, .li, .field, .quick div, .mode, .opt, .upl, .otp b, .step, .chip, .appbar .round{
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    border:0; border-radius:var(--rad);
+    box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .li, .opt, .field{border-radius:22px}
+  .quick div{border-radius:24px}
+  .appbar .round{border-radius:50%}
+  .chip{border-radius:999px}
+  .otp b{border-radius:20px}
+  .card{padding:16px} .li{padding:13px 15px}
+
+  /* the floating tab bar */
+  .tabs{
+    margin:0 11px 11px; border-radius:30px; padding:11px 6px; border:0;
+    background:var(--g-sweep), rgba(255,255,255,.38);
+    -webkit-backdrop-filter:var(--g-blur-hi); backdrop-filter:var(--g-blur-hi);
+    box-shadow:var(--g-lens), 0 10px 32px -10px rgba(11,11,13,.38);
+  }
+  .tabs div{color:var(--k3)}
+  .tabs div.on{color:var(--k)}
+  .tabs div.on::before{top:-11px;height:3.5px;border-radius:0 0 5px 5px;
+                       background:var(--k);box-shadow:0 3px 12px rgba(11,11,13,.55)}
+
+  /* fields */
+  .f .lab{font-size:.79rem;font-weight:520;letter-spacing:0;text-transform:none;
+          color:var(--k3);margin-bottom:8px}
+  .f .ctl{
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    border:0; border-radius:20px; min-height:52px;
+    box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .f .ctl .tx{color:var(--k);font-weight:570} .f .ctl .ph{color:var(--k4)}
+  .f .ctl .ic{color:var(--k3)} .f .ctl .cur{background:var(--k)}
+  .f.focus .ctl{background:var(--g-sweep), var(--g-fill-hi);
+                box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.22), 0 16px 34px -12px rgba(11,11,13,.4)}
+  .f.focus .lab{color:var(--k);font-weight:620}
+  .f.err .ctl{box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.5), var(--g-drop)}
+  .f.good .ctl{box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.3), var(--g-drop)}
+  .f.dis .ctl{background:rgba(255,255,255,.16);box-shadow:inset 0 1px .5px rgba(255,255,255,.6);
+              -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  .f .help{font-size:.74rem;color:var(--k3)}
+  .f .help.err{color:var(--k);font-weight:600} .f .help.good{color:var(--k2)}
+  .f .lab i{color:var(--k)}
+
+  /* recessed tracks */
+  .seg, .meth, .modesw{
+    background:rgba(11,11,13,.09); border:0; border-radius:999px; padding:4px;
+    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+    box-shadow:inset 0 2px 7px rgba(11,11,13,.14), inset 0 -1px 0 rgba(255,255,255,.5);
+  }
+  .meth{border-radius:22px} .meth div{border-radius:18px;color:var(--k3)}
+  .seg div, .modesw span{border-radius:999px;color:var(--k3)}
+  .seg div.on, .modesw span.on{
+    background:var(--g-sweep), rgba(255,255,255,.82); color:var(--k);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    box-shadow:var(--g-lens), 0 4px 12px -3px rgba(11,11,13,.28);
+  }
+  .meth div.on{
+    background:linear-gradient(138deg,rgba(255,255,255,.3),rgba(255,255,255,.04) 42%), var(--k);
+    color:#fff; box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 8px 20px -6px rgba(11,11,13,.6);
+  }
+
+  /* the one dark surface — ink glass */
+  .hero, .mgrbar{
+    background:linear-gradient(138deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.05) 32%,transparent 60%),
+               rgba(11,11,13,.9);
+    -webkit-backdrop-filter:blur(30px) saturate(140%); backdrop-filter:blur(30px) saturate(140%);
+    border:0; border-radius:var(--rad); color:#fff;
+    box-shadow:inset 0 1.5px .5px rgba(255,255,255,.4), inset 0 -1.2px .5px rgba(255,255,255,.14),
+               0 18px 42px -14px rgba(11,11,13,.6);
+  }
+  .hero::before{background:radial-gradient(circle,rgba(255,255,255,.18),transparent 68%)}
+
+  .btn{
+    border:0; border-radius:20px; color:#fff;
+    background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+    box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 14px 30px -10px rgba(11,11,13,.55);
+  }
+  .btn.g, .btn.r{background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+                 box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 14px 30px -10px rgba(11,11,13,.55)}
+  .btn.r{background:linear-gradient(138deg,rgba(255,255,255,.3),rgba(255,255,255,.05) 44%), #fff;
+         color:var(--k); box-shadow:var(--g-lens), inset 0 0 0 1.5px var(--k), var(--g-drop)}
+  .btn.o{background:var(--g-sweep), var(--g-fill-hi); color:var(--k);
+         -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+         box-shadow:var(--g-lens), inset 0 0 0 1.2px rgba(11,11,13,.16), var(--g-drop)}
+  .btn.ghost{background:none;box-shadow:none;color:var(--k2)}
+  .btn.dis{background:rgba(255,255,255,.2);color:var(--k4);
+           box-shadow:inset 0 1px .5px rgba(255,255,255,.5)}
+  .btn.load{background:linear-gradient(138deg,rgba(255,255,255,.2),transparent 44%), rgba(11,11,13,.55);box-shadow:none}
+  .fab{border-radius:24px;color:#fff;
+       background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+       box-shadow:inset 0 1.5px .5px rgba(255,255,255,.4), 0 18px 36px -10px rgba(11,11,13,.65)}
+
+  /* status by tone, not hue */
+  .pill{border:0;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+        box-shadow:inset 0 1px .5px rgba(255,255,255,.85)}
+  .p-ok{background:var(--k);color:#fff;box-shadow:none}
+  .p-warn{background:rgba(11,11,13,.14);color:var(--k)}
+  .p-bad{background:#fff;color:var(--k);box-shadow:inset 0 0 0 1.4px var(--k)}
+  .p-brand{background:rgba(11,11,13,.1);color:var(--k)}
+  .p-grey{background:rgba(11,11,13,.07);color:var(--k3)}
+  .chip{color:var(--k3)}
+  .chip.on{background:linear-gradient(138deg,rgba(255,255,255,.26),rgba(255,255,255,.04) 44%), var(--k);
+           color:#fff;box-shadow:inset 0 1.4px .5px rgba(255,255,255,.4), 0 10px 22px -7px rgba(11,11,13,.55)}
+
+  .cal b:not(.off):not(.mut):not(.now){
+    background:var(--g-sweep), rgba(255,255,255,.26); color:var(--k2); border-radius:13px;
+    -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+    box-shadow:inset 0 1px .5px rgba(255,255,255,.8);
+  }
+  .cal b.ok{background:rgba(11,11,13,.1);color:var(--k)}
+  .cal b.late{background:rgba(11,11,13,.2);color:var(--k)}
+  .cal b.abs{background:var(--k);color:#fff;box-shadow:none}
+  .cal b.now{background:var(--k);color:#fff;border-radius:13px;
+             box-shadow:inset 0 1.4px .5px rgba(255,255,255,.35), 0 8px 20px -5px rgba(11,11,13,.6)}
+  .cal b.off,.cal b.mut{color:var(--k4)}
+  .cal span{color:var(--k4)}
+
+  .sw{background:rgba(11,11,13,.18);border:0;
+      box-shadow:inset 0 2px 7px rgba(11,11,13,.2), inset 0 -1px 0 rgba(255,255,255,.4)}
+  .sw.on{background:var(--k);box-shadow:inset 0 1px 3px rgba(0,0,0,.4)}
+  .sw::after{box-shadow:0 3px 9px rgba(11,11,13,.35), inset 0 1.2px 0 #fff}
+  .cb,.rd{background:rgba(255,255,255,.4);border:1.5px solid rgba(11,11,13,.22);
+          -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+          box-shadow:inset 0 1px .5px rgba(255,255,255,.85)}
+  .cb.on{background:var(--k);border-color:transparent;box-shadow:0 4px 10px -3px rgba(11,11,13,.5)}
+  .rd.on{border-color:var(--k);box-shadow:0 0 0 4px rgba(11,11,13,.1)}
+  .rd.on::after{background:var(--k)}
+  .opt.on{box-shadow:var(--g-lens), inset 0 0 0 1.6px var(--k), var(--g-drop)}
+  .opt.on .ot{color:var(--k)}
+
+  .sheet{
+    border-radius:30px 30px 0 0; border:0;
+    background:var(--g-sweep), rgba(255,255,255,.42);
+    -webkit-backdrop-filter:var(--g-blur-hi); backdrop-filter:var(--g-blur-hi);
+    box-shadow:inset 0 1.5px .5px rgba(255,255,255,1), 0 -18px 46px -14px rgba(11,11,13,.4);
+  }
+  .sheet .si.on{color:var(--k);background:linear-gradient(90deg,rgba(11,11,13,.07),transparent)}
+  .toast{border-radius:22px;border:0;color:#fff;
+         -webkit-backdrop-filter:blur(30px); backdrop-filter:blur(30px);
+         box-shadow:inset 0 1.4px .5px rgba(255,255,255,.35), 0 20px 40px -14px rgba(11,11,13,.6)}
+  .toast.ok,.toast.info{background:linear-gradient(138deg,rgba(255,255,255,.22),transparent 45%), rgba(11,11,13,.88)}
+  .toast.bad{background:linear-gradient(138deg,rgba(255,255,255,.3),transparent 45%), rgba(255,255,255,.9);
+             color:var(--k);box-shadow:inset 0 0 0 1.6px var(--k), 0 20px 40px -14px rgba(11,11,13,.4)}
+  .upl{border:1.6px dashed rgba(11,11,13,.24);background:rgba(255,255,255,.18)}
+  .upl .ui{background:rgba(11,11,13,.08);color:var(--k)}
+
+  /* avatars and accents go mono */
+  .av{background:var(--k) !important;color:#fff;
+      box-shadow:0 3px 9px -2px rgba(11,11,13,.4), inset 0 1.2px 0 rgba(255,255,255,.3)}
+  .pod .av{border-color:#fff}
+  .pod .base{background:var(--k) !important}
+  .mode .pick .ico{background:var(--k);color:#fff;
+                   box-shadow:0 5px 13px -4px rgba(11,11,13,.5), inset 0 1.2px 0 rgba(255,255,255,.3)}
+  .quick .qi{background:rgba(11,11,13,.08) !important;color:var(--k)}
+  .slider .fill{background:var(--k)} .slider .knob{box-shadow:0 3px 10px rgba(11,11,13,.35), 0 0 0 2px var(--k)}
+  .otp b.on{box-shadow:var(--g-lens), 0 0 0 3.5px rgba(11,11,13,.22), var(--g-drop)}
+  .step i{background:rgba(11,11,13,.05);color:var(--k)}
+  .sechead a{color:var(--k);font-weight:650}
+
+  /* dividers are white on glass */
+  .mode .opts{background:rgba(255,255,255,.16);border-top:1px solid rgba(255,255,255,.7)}
+  .mode .opt{border-bottom:1px solid rgba(255,255,255,.6);background:none;box-shadow:none;border-radius:0}
+  .mode .opt:last-child{border-bottom:0}
+  .mode .opt.on .ot{color:var(--k)}
+  .sheet .si,.sheet .sh{border-bottom-color:rgba(255,255,255,.65)}
+  .kv.tot{border-top:1.5px dashed rgba(11,11,13,.2)}
+
+  /* text */
+  .nm,.appbar h3,.f .ctl .tx{color:var(--k)}
+  .mt,.appbar .sub,.sechead,.quick span,.opt .os,.mode .pick .cv .k{color:var(--k3)}
+  .hero .lbl,.hero .sm{color:rgba(255,255,255,.82)}
+
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .card,.li,.field,.quick div,.mode,.opt,.upl,.otp b,.step,.chip,.f .ctl,.btn.o,.appbar .round,
+    .seg div.on,.modesw span.on,.cal b:not(.off):not(.mut):not(.now){background:rgba(255,255,255,.95)}
+    .tabs,.sheet{background:rgba(255,255,255,.97)}
+    .seg,.meth,.modesw{background:#e8e9ec}
+  }
+
+
+  /* the page itself goes mono too — a coloured frame around a colourless
+     app just moves the problem outside the phone */
+  body::before{
+    background:
+      radial-gradient(42rem 30rem at 12% 2%,  rgba(255,255,255,.14), transparent 62%),
+      radial-gradient(38rem 28rem at 88% 10%, rgba(255,255,255,.10), transparent 62%),
+      radial-gradient(44rem 32rem at 70% 72%, rgba(255,255,255,.07), transparent 64%),
+      radial-gradient(40rem 30rem at 18% 88%, rgba(255,255,255,.06), transparent 62%);
+  }
+  header h1{
+    background:linear-gradient(104deg,#fff 0%,#e6e9ef 44%,#aab2c0 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  h2 .n{background:#fff;color:#0b0b0d;box-shadow:0 6px 18px -6px rgba(255,255,255,.4)}
+  .note{border-left-color:#fff;background:linear-gradient(100deg,rgba(255,255,255,.1),rgba(255,255,255,.03))}
+  .note b{color:#fff}
+  code{color:#dfe3ea}
+  .phone{box-shadow:
+      0 2px 3px rgba(0,0,0,.5),
+      0 30px 60px -22px rgba(0,0,0,.85),
+      0 60px 90px -40px rgba(255,255,255,.1),
+      inset 0 0 0 1.5px rgba(255,255,255,.14),
+      inset 0 2px 1px rgba(255,255,255,.22),
+      inset 0 -2px 2px rgba(0,0,0,.6)}
+  .unit:hover .phone{box-shadow:
+      0 2px 3px rgba(0,0,0,.5),
+      0 44px 80px -24px rgba(0,0,0,.9),
+      0 80px 120px -46px rgba(255,255,255,.16),
+      inset 0 0 0 1.5px rgba(255,255,255,.2),
+      inset 0 2px 1px rgba(255,255,255,.28),
+      inset 0 -2px 2px rgba(0,0,0,.6)}
+
+  /* kill colour at the source — anything still reaching for --brand or
+     --ok gets a grey, so no rule I missed can leak a hue */
+  :root{
+    --brand:#0b0b0d; --brand2:#2a2d33; --brand3:#4a4e57;
+    --ok:#0b0b0d; --warn:#4a4e57; --bad:#0b0b0d;
+    --gold:#0b0b0d; --silver:#5c616b; --bronze:#8a8f99;
+    --brand-soft:rgba(11,11,13,.08); --ok-soft:rgba(11,11,13,.08);
+    --warn-soft:rgba(11,11,13,.12); --bad-soft:rgba(11,11,13,.06);
+    --muted:#9aa0aa; --faint:#6e737d;
+    --c-sub:#6e737d; --c-ink:#0b0b0d; --s-sub:#6e737d; --s-ink:#0b0b0d;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     DARK GLASS — the black surfaces are glass too
+
+     Solid black is paint, not glass. These become translucent ink with
+     the same blur, so the wash behind them shows through. Held at ~.66
+     rather than lower: white text on 40% black over a light backdrop
+     drops under 3:1 and stops being readable. Decorative parts, which
+     carry no text, go further down.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  :root{
+    --ink-glass:rgba(11,11,13,.66);      /* carries white text */
+    --ink-glass-soft:rgba(11,11,13,.5);  /* small, short text  */
+    --ink-glass-dec:rgba(11,11,13,.34);  /* decorative only    */
+    --ink-blur:blur(32px) saturate(150%);
+    --ink-rim:inset 0 1.4px .5px rgba(255,255,255,.42),
+              inset 1.2px 0 .5px rgba(255,255,255,.2),
+              inset 0 -1.2px .5px rgba(255,255,255,.16);
+  }
+
+  .hero, .mgrbar{
+    background:linear-gradient(138deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,.04) 34%,transparent 62%),
+               var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 18px 42px -16px rgba(11,11,13,.45);
+  }
+
+  .btn, .btn.g{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 14px 30px -12px rgba(11,11,13,.4);
+  }
+  .btn.r{
+    background:var(--g-sweep), rgba(255,255,255,.42); color:var(--k);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    box-shadow:var(--g-lens), inset 0 0 0 1.4px rgba(11,11,13,.55), var(--g-drop);
+  }
+  .btn.load{background:linear-gradient(138deg,rgba(255,255,255,.14),transparent 46%), rgba(11,11,13,.4);
+            -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+            box-shadow:var(--ink-rim)}
+  .fab{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 18px 36px -12px rgba(11,11,13,.5);
+  }
+  .meth div.on{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 8px 20px -8px rgba(11,11,13,.45);
+  }
+  .chip.on{
+    background:linear-gradient(138deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 46%), var(--ink-glass-soft);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 10px 22px -9px rgba(11,11,13,.4);
+  }
+  .p-ok{
+    background:var(--ink-glass-soft); color:#fff;
+    -webkit-backdrop-filter:blur(18px) saturate(150%); backdrop-filter:blur(18px) saturate(150%);
+    box-shadow:inset 0 1px .5px rgba(255,255,255,.35);
+  }
+  .p-bad{background:rgba(255,255,255,.4);color:var(--k);
+         -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+         box-shadow:inset 0 0 0 1.3px rgba(11,11,13,.45), inset 0 1px .5px rgba(255,255,255,.8)}
+
+  .av{
+    background:var(--ink-glass-soft) !important;
+    -webkit-backdrop-filter:blur(20px) saturate(150%); backdrop-filter:blur(20px) saturate(150%);
+    box-shadow:var(--ink-rim), 0 4px 12px -4px rgba(11,11,13,.3);
+  }
+  .pod .base{background:var(--ink-glass-soft) !important;
+             -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+             box-shadow:var(--ink-rim)}
+  .mode .pick .ico{
+    background:var(--ink-glass-soft);
+    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+    box-shadow:var(--ink-rim), 0 5px 13px -5px rgba(11,11,13,.35);
+  }
+
+  .cal b.abs, .cal b.now{
+    background:var(--ink-glass-soft); color:#fff;
+    -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+    box-shadow:inset 0 1px .5px rgba(255,255,255,.35);
+  }
+  .cal b.now{box-shadow:inset 0 1.2px .5px rgba(255,255,255,.45), 0 8px 20px -8px rgba(11,11,13,.4)}
+
+  .sw.on{background:var(--ink-glass-soft);
+         -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+         box-shadow:inset 0 1px .5px rgba(255,255,255,.3)}
+  .cb.on{background:var(--ink-glass-soft);
+         -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+         box-shadow:inset 0 1px .5px rgba(255,255,255,.3)}
+  .rd.on::after{background:var(--ink-glass)}
+  .opt.on{box-shadow:var(--g-lens), inset 0 0 0 1.4px rgba(11,11,13,.45), var(--g-drop)}
+
+  .tabs div.on::before{background:var(--ink-glass);box-shadow:0 3px 12px rgba(11,11,13,.4)}
+
+  .toast.ok, .toast.info{
+    background:linear-gradient(138deg,rgba(255,255,255,.18),transparent 46%), var(--ink-glass);
+    -webkit-backdrop-filter:var(--ink-blur); backdrop-filter:var(--ink-blur);
+    box-shadow:var(--ink-rim), 0 20px 40px -16px rgba(11,11,13,.45);
+  }
+  .toast.bad{background:var(--g-sweep), rgba(255,255,255,.48);color:var(--k);
+             -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+             box-shadow:var(--g-lens), inset 0 0 0 1.4px rgba(11,11,13,.5), var(--g-drop)}
+
+  .slider .fill{background:var(--ink-glass-soft)}
+  .slider .knob{box-shadow:0 3px 10px rgba(11,11,13,.3), 0 0 0 2px rgba(11,11,13,.55)}
+  .quick .qi{background:rgba(11,11,13,.09) !important;
+             -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+             box-shadow:inset 0 1px .5px rgba(255,255,255,.7)}
+  .step i{background:rgba(11,11,13,.06)}
+
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .hero,.mgrbar,.btn,.btn.g,.fab,.meth div.on,.toast.ok,.toast.info{background:rgba(11,11,13,.9)}
+    .av,.p-ok,.chip.on,.pod .base,.cal b.abs,.cal b.now,.sw.on,.cb.on,.mode .pick .ico{background:rgba(11,11,13,.85)}
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     FRESH — light, crisp, high contrast
+
+     The previous pass was grey on grey: a near-black page around screens
+     washed with dark smudges, and glass so thin everything turned muddy.
+     Three fixes:
+
+       1  The page goes light. A dark frame makes anything inside it feel
+          heavy, and it was fighting the white app.
+       2  The screen backdrop lights up — soft white highlights instead of
+          dark stains, so the glass sits on air rather than on dirt.
+       3  Glass fills rise to ~70%. Crisp white reads as clean; 25% white
+          over a grey wash reads as dishwater. The blur still does the work.
+
+     Contrast carries the freshness: true black type on near-white, and
+     the few dark surfaces kept rich rather than washed out.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  :root{
+    --k:#07080a; --k2:#2e3238; --k3:#636974; --k4:#a2a8b3;
+    --page:#eff1f5; --page2:#f7f8fa;
+    --hair:rgba(7,8,10,.07);
+
+    --g-blur:blur(30px) saturate(180%) brightness(1.04);
+    --g-blur-hi:blur(44px) saturate(200%) brightness(1.06);
+    --g-sweep:linear-gradient(140deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.45) 30%,
+                              rgba(255,255,255,.2) 62%,rgba(255,255,255,.4) 100%);
+    --g-fill:rgba(255,255,255,.7);
+    --g-fill-hi:rgba(255,255,255,.86);
+    --g-lens:
+      inset 0 1.4px .5px rgba(255,255,255,1),
+      inset 1.2px 0 .5px rgba(255,255,255,.8),
+      inset -1px 0 .5px rgba(255,255,255,.5),
+      inset 0 -1px .5px rgba(255,255,255,.6);
+    --g-drop:0 1px 2px rgba(7,8,10,.04), 0 6px 16px -8px rgba(7,8,10,.16);
+
+    --ink-glass:rgba(12,14,18,.84);
+    --ink-glass-soft:rgba(12,14,18,.7);
+    --ink-blur:blur(26px) saturate(170%);
+  }
+
+  /* ── 1 · the page ── */
+  body{background:var(--page);color:var(--k)}
+  body::before{
+    background:
+      radial-gradient(40rem 28rem at 10% 0%,  rgba(255,255,255,.95), transparent 64%),
+      radial-gradient(36rem 26rem at 92% 6%,  rgba(255,255,255,.8), transparent 64%),
+      radial-gradient(44rem 30rem at 72% 78%, rgba(255,255,255,.7), transparent 66%),
+      radial-gradient(38rem 28rem at 14% 92%, rgba(255,255,255,.75), transparent 64%);
+    filter:none;
+  }
+  body::after{
+    opacity:.5;
+    background-image:linear-gradient(rgba(7,8,10,.035) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(7,8,10,.035) 1px,transparent 1px);
+  }
+
+  header{padding:72px 0 52px}
+  header h1{
+    background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--k);
+    font-weight:820;letter-spacing:-.04em;
+  }
+  header p{color:var(--k3);font-size:1.05rem}
+  header a{color:var(--k2);border-bottom-color:rgba(7,8,10,.2);font-weight:550}
+  header a:hover{color:var(--k);border-bottom-color:var(--k)}
+  header .counts span{
+    background:rgba(255,255,255,.8);border:1px solid var(--hair);color:var(--k2);font-weight:560;
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+    box-shadow:0 1px 2px rgba(7,8,10,.04);
+  }
+
+  nav{
+    background:rgba(255,255,255,.78);border-bottom:1px solid var(--hair);
+    -webkit-backdrop-filter:saturate(190%) blur(26px);backdrop-filter:saturate(190%) blur(26px);
+    box-shadow:0 1px 3px rgba(7,8,10,.04);
+  }
+  nav a{color:var(--k3);font-weight:580}
+  nav a:hover{color:var(--k);background:rgba(7,8,10,.05);border-color:transparent}
+
+  h2{color:var(--k);font-weight:800;letter-spacing:-.03em;font-size:1.65rem}
+  h2 .n{background:var(--k);color:#fff;box-shadow:0 6px 16px -6px rgba(7,8,10,.4)}
+  h3{color:var(--k);font-weight:700}
+  h3::after{background:linear-gradient(90deg,var(--hair),transparent)}
+  .lede{color:var(--k3);font-size:1rem;margin-bottom:38px}
+  .lede b{color:var(--k)}
+
+  .cap b{color:var(--k);font-weight:720;font-size:1rem}
+  .cap span{color:var(--k3);font-size:.85rem}
+  .cap em{color:var(--k2)}
+  .cell .st{color:var(--k4)}
+
+  /* clean shadow under a light phone, no coloured halo */
+  .phone{
+    background:linear-gradient(150deg,#e4e7ec 0%,#babfc8 22%,#2a2e36 52%,#4a505b 78%,#d8dce2 100%);
+    box-shadow:
+      0 1px 2px rgba(7,8,10,.1),
+      0 18px 36px -14px rgba(7,8,10,.26),
+      0 44px 70px -34px rgba(7,8,10,.3),
+      inset 0 0 0 1.4px rgba(255,255,255,.5),
+      inset 0 2px 1px rgba(255,255,255,.65),
+      inset 0 -2px 2px rgba(0,0,0,.35);
+  }
+  .unit:hover .phone{
+    box-shadow:
+      0 1px 2px rgba(7,8,10,.1),
+      0 30px 54px -16px rgba(7,8,10,.3),
+      0 64px 96px -40px rgba(7,8,10,.34),
+      inset 0 0 0 1.4px rgba(255,255,255,.6),
+      inset 0 2px 1px rgba(255,255,255,.75),
+      inset 0 -2px 2px rgba(0,0,0,.35);
+  }
+
+  table{background:rgba(255,255,255,.78);border:1px solid var(--hair);
+        -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+        box-shadow:0 1px 2px rgba(7,8,10,.04), 0 10px 28px -16px rgba(7,8,10,.2)}
+  th{color:var(--k4);border-bottom-color:var(--hair);background:rgba(7,8,10,.025)}
+  td{color:var(--k2);border-bottom-color:var(--hair)}
+  td b{color:var(--k)}
+  tbody tr:hover td{background:rgba(7,8,10,.02)}
+  code{background:rgba(7,8,10,.06);color:var(--k2)}
+  .note{
+    border-left:3px solid var(--k);border-radius:0 16px 16px 0;color:var(--k2);
+    background:rgba(255,255,255,.72);
+    -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    border-top:1px solid var(--hair);border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);
+    box-shadow:0 1px 2px rgba(7,8,10,.04);
+  }
+  .note b{color:var(--k)}
+  footer{border-top-color:var(--hair);color:var(--k4)}
+
+  /* ── 2 · the screen lights up ── */
+  .screen{
+    background:
+      radial-gradient(52% 34% at 14% 2%,   rgba(255,255,255,1), transparent 68%),
+      radial-gradient(46% 30% at 94% 8%,   rgba(255,255,255,.95), transparent 68%),
+      radial-gradient(54% 36% at 80% 96%,  rgba(255,255,255,.9), transparent 68%),
+      radial-gradient(44% 30% at 2% 70%,   rgba(255,255,255,.85), transparent 68%),
+      linear-gradient(168deg,#f4f6f9 0%,#e9ecf1 54%,#eef0f4 100%);
+  }
+  .canvas{
+    background:
+      radial-gradient(52% 34% at 12% 2%,   rgba(255,255,255,1), transparent 68%),
+      radial-gradient(46% 30% at 94% 8%,   rgba(255,255,255,.95), transparent 68%),
+      radial-gradient(54% 36% at 80% 96%,  rgba(255,255,255,.9), transparent 68%),
+      linear-gradient(168deg,#f5f7fa,#e9ecf1);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 1px 2px rgba(7,8,10,.05), 0 16px 40px -20px rgba(7,8,10,.25),
+               inset 0 1px 0 #fff;
+  }
+
+  /* ── 3 · crisp glass ── */
+  .card, .li, .field, .quick div, .mode, .opt, .upl, .otp b, .step, .chip, .appbar .round{
+    background:var(--g-sweep), var(--g-fill);
+    box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .f .ctl{background:var(--g-sweep), var(--g-fill);box-shadow:var(--g-lens), var(--g-drop)}
+  .f.focus .ctl{background:var(--g-sweep), var(--g-fill-hi);
+                box-shadow:var(--g-lens), 0 0 0 3.5px rgba(7,8,10,.14), 0 10px 26px -10px rgba(7,8,10,.3)}
+  .tabs{background:var(--g-sweep), rgba(255,255,255,.76);
+        box-shadow:var(--g-lens), 0 8px 26px -10px rgba(7,8,10,.3)}
+  .sheet{background:var(--g-sweep), rgba(255,255,255,.8);
+         box-shadow:inset 0 1.5px .5px #fff, 0 -14px 40px -16px rgba(7,8,10,.3)}
+  .seg, .meth, .modesw{background:rgba(7,8,10,.06);
+                       box-shadow:inset 0 2px 6px rgba(7,8,10,.1), inset 0 -1px 0 rgba(255,255,255,.9)}
+  .seg div.on, .modesw span.on{background:var(--g-sweep), rgba(255,255,255,.96);
+                               box-shadow:var(--g-lens), 0 3px 10px -3px rgba(7,8,10,.22)}
+  .cal b:not(.off):not(.mut):not(.now){background:var(--g-sweep), rgba(255,255,255,.66);
+                                       box-shadow:inset 0 1px .5px #fff}
+  .cb,.rd{background:rgba(255,255,255,.85);border-color:rgba(7,8,10,.18)}
+  .sw{background:rgba(7,8,10,.14);box-shadow:inset 0 2px 6px rgba(7,8,10,.16), inset 0 -1px 0 rgba(255,255,255,.8)}
+  .upl{border:1.6px dashed rgba(7,8,10,.18);background:rgba(255,255,255,.5)}
+  .quick .qi{background:rgba(7,8,10,.06) !important;box-shadow:inset 0 1px .5px #fff}
+  .step i{background:rgba(7,8,10,.04)}
+
+  /* dark surfaces stay rich — washed-out black is what looked sad */
+  .hero, .mgrbar{
+    background:linear-gradient(140deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.05) 34%,transparent 62%),
+               var(--ink-glass);
+    box-shadow:inset 0 1.4px .5px rgba(255,255,255,.45), inset 0 -1px .5px rgba(255,255,255,.15),
+               0 14px 34px -14px rgba(7,8,10,.5);
+  }
+  .btn, .btn.g, .fab, .meth div.on{
+    background:linear-gradient(140deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 46%), var(--ink-glass);
+    box-shadow:inset 0 1.4px .5px rgba(255,255,255,.45), 0 10px 24px -10px rgba(7,8,10,.45);
+  }
+  .av{background:var(--ink-glass-soft) !important;
+      box-shadow:inset 0 1.2px .5px rgba(255,255,255,.4), 0 3px 10px -3px rgba(7,8,10,.3)}
+  .p-ok{background:var(--ink-glass-soft)}
+  .chip.on{background:linear-gradient(140deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 46%), var(--ink-glass-soft)}
+  .cal b.abs,.cal b.now,.sw.on,.cb.on{background:var(--ink-glass-soft)}
+  .mode .pick .ico,.pod .base{background:var(--ink-glass-soft) !important}
+  .tabs div.on::before{background:var(--k)}
+  .toast.ok,.toast.info{background:linear-gradient(140deg,rgba(255,255,255,.2),transparent 46%), var(--ink-glass)}
+
+  /* ── type: crisper, more air ── */
+  .appbar h3{font-weight:800;letter-spacing:-.035em;font-size:1.16rem;color:var(--k)}
+  .appbar .sub{color:var(--k3);font-weight:500}
+  .nm{color:var(--k);font-weight:620;letter-spacing:-.012em}
+  .mt{color:var(--k3)}
+  .sechead{color:var(--k4);font-weight:700;letter-spacing:.1em}
+  .sechead a{color:var(--k);font-weight:650}
+  .hero .big{font-weight:800;letter-spacing:-.04em}
+  .hero .lbl{color:rgba(255,255,255,.72)} .hero .sm{color:rgba(255,255,255,.88)}
+  .f .lab{color:var(--k3);font-weight:540;font-size:.8rem}
+  .f.focus .lab{color:var(--k);font-weight:640}
+  .f .ctl .tx{color:var(--k);font-weight:570} .f .ctl .ph{color:var(--k4)}
+  .body{gap:13px;padding:0 16px 6px}
+  .list{gap:9px}
+  .p-warn{background:rgba(7,8,10,.1);color:var(--k2)}
+  .p-brand{background:rgba(7,8,10,.07);color:var(--k2)}
+  .p-grey{background:rgba(7,8,10,.05);color:var(--k3)}
+  .p-bad{background:rgba(255,255,255,.7);box-shadow:inset 0 0 0 1.3px rgba(7,8,10,.4), inset 0 1px .5px #fff}
+
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    nav,header .counts span,table,.note{background:#fff}
+  }
+  @media print{ body{background:#fff} .phone{box-shadow:0 2px 10px rgba(0,0,0,.18)} }
+
+
+  /* The tertiary grey was 2.39:1 on white — section headers and
+     placeholders were decoration rather than text. Both greys moved up
+     until they pass, with enough gap left between them to still read as
+     a hierarchy. */
+  :root{ --k3:#59606b; --k4:#767d88 }
+  .cal b.off, .cal b.mut{color:#9ba1ab}
+  .f .ctl .ph{color:#767d88}
+
+  /* ═══════════════════════════════════════════════════════════════════
+     TYPE & LAYOUT FIX
+
+     The hero card on Home had collapsed to a thin bar — its label showed
+     but the big time had vanished. The body is a flex column and its
+     children were shrinking to fit, squeezing the tallest card flat.
+     Children now keep their own height and the screen clips instead,
+     which is what a phone actually does.
+
+     The rest is typography: uppercase letterspaced eyebrows everywhere
+     read as dated, and the camera captions were colliding with the
+     reticle behind them.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* ── the collapse ── */
+  .body > *{flex:0 0 auto}
+  .body{overflow:hidden}
+  .hero{min-height:fit-content}
+  .hero .big{line-height:1.08;white-space:nowrap}
+
+  /* ── eyebrows become quiet headings, not shouted labels ── */
+  .sechead{
+    font-size:.8rem; font-weight:680; letter-spacing:-.008em; text-transform:none;
+    color:var(--k2); margin:7px 2px 1px;
+  }
+  .sechead a{font-size:.74rem;font-weight:600;color:var(--k3);letter-spacing:0}
+  .hero .lbl{
+    font-size:.74rem; letter-spacing:-.005em; text-transform:none; font-weight:520;
+    color:rgba(255,255,255,.72);
+  }
+  .f .lab{font-size:.8rem;font-weight:540;letter-spacing:-.005em;text-transform:none}
+  .cell .st{font-size:.72rem;font-weight:640;letter-spacing:-.005em;text-transform:none;color:var(--k3)}
+  .field .fl{font-size:.68rem;font-weight:620;letter-spacing:-.003em;text-transform:none;color:var(--k3)}
+  .mode .pick .cv .k{font-size:.68rem;font-weight:600;letter-spacing:-.003em;text-transform:none}
+  .appbar .sub{font-size:.73rem}
+
+  /* ── readable body copy ── */
+  .nm{font-size:.845rem;line-height:1.3;letter-spacing:-.014em;font-weight:620}
+  .mt{font-size:.725rem;line-height:1.42}
+  .pill{font-size:.615rem;letter-spacing:.01em;font-weight:700;padding:4px 9px}
+  .tabs div{font-size:9.5px;font-weight:600;letter-spacing:-.002em}
+  .quick span{font-size:.625rem;letter-spacing:-.005em}
+  .kv{font-size:.775rem} .kv.tot{font-size:.87rem}
+
+  /* stop the awkward two-word wraps in narrow cards */
+  .li .nm, .opt .ot, .card .nm{text-wrap:pretty}
+  .li .mt, .opt .os{text-wrap:pretty}
+
+  /* ── camera captions: a pill, clear of the reticle ── */
+  .cam{display:flex;flex-direction:column;justify-content:flex-end;min-height:230px}
+  .cam .reticle{top:44%}
+  .cam .face{top:46%}
+  .cam .head{top:46%}
+  .cam .hint{
+    position:relative;left:auto;right:auto;bottom:auto;margin:0 14px 14px;
+    background:rgba(10,12,16,.52);
+    -webkit-backdrop-filter:blur(18px) saturate(150%); backdrop-filter:blur(18px) saturate(150%);
+    border-radius:15px;padding:9px 13px;font-size:.735rem;line-height:1.45;
+    text-shadow:none;box-shadow:inset 0 1px .5px rgba(255,255,255,.26);
+    text-wrap:balance;
+  }
+  .cam .hint span{display:block;margin-top:2px;font-size:.69rem}
+
+  /* ── a little more air between things ── */
+  .body{gap:12px;padding:0 16px 6px}
+  .card{padding:15px} .li{padding:12px 14px}
+  .appbar{padding:6px 18px 14px}
+  .appbar h3{font-size:1.2rem;letter-spacing:-.038em;font-weight:780}
+
+  /* Now that cards keep their real height, the longest screens need the
+     room. 300 x 684 is 19.5:9 — the actual iPhone ratio, where the old
+     620 was a stubbier 18.6:9. Home fits without clipping. */
+  .phone{height:684px}
+  .unit{width:300px}
+
+  /* ═══════════════════════════════════════════════════════════════════
+     iOS PICKERS
+
+     A select on iPhone is not a dropdown. Tapping the row raises a wheel
+     from the bottom of the screen: a drum of options with a highlight bar
+     across the middle, dimmed and foreshortened as they fall away, and a
+     Cancel / Done toolbar on top.
+
+     The closed state is a Settings-style row — label on the left, current
+     value grey on the right, with the stacked chevron pair that marks a
+     menu button on iOS.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* ── closed: the settings row ── */
+  .iosrow{
+    display:flex;align-items:center;gap:12px;min-height:50px;padding:11px 14px;
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    border-radius:20px;box-shadow:var(--g-lens), var(--g-drop);
+  }
+  .iosrow .rl{font-size:.875rem;font-weight:560;color:var(--k);flex:1;min-width:0}
+  .iosrow .rv{font-size:.875rem;color:var(--k3);font-weight:520;text-align:right;
+              white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56%}
+  .iosrow .rv.ph{color:var(--k4)}
+  .iosrow .cv{display:flex;flex-direction:column;gap:2px;flex:none;opacity:.5}
+  .iosrow .cv i{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;font-style:normal}
+  .iosrow .cv i:first-child{border-bottom:5px solid var(--k2)}
+  .iosrow .cv i:last-child{border-top:5px solid var(--k2)}
+  .iosrow .chev{color:var(--k4);font-size:1rem;flex:none;font-weight:600}
+
+  /* grouped rows, the way Settings stacks them */
+  .iosgroup{border-radius:20px;overflow:hidden;
+    background:var(--g-sweep), var(--g-fill);
+    -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+    box-shadow:var(--g-lens), var(--g-drop)}
+  .iosgroup .iosrow{background:none;box-shadow:none;border-radius:0;
+    border-bottom:1px solid rgba(7,8,10,.07);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .iosgroup .iosrow:last-child{border-bottom:0}
+
+  /* ── open: the wheel ── */
+  .wheel{
+    border-radius:26px 26px 0 0;overflow:hidden;
+    background:var(--g-sweep), rgba(255,255,255,.82);
+    -webkit-backdrop-filter:var(--g-blur-hi); backdrop-filter:var(--g-blur-hi);
+    box-shadow:inset 0 1.5px .5px #fff, 0 -16px 44px -16px rgba(7,8,10,.3);
+  }
+  .wheel .bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:13px 18px;border-bottom:1px solid rgba(7,8,10,.07);
+  }
+  .wheel .bar .c{font-size:.875rem;color:var(--k3);font-weight:520}
+  .wheel .bar .t{font-size:.8rem;color:var(--k3);font-weight:620}
+  .wheel .bar .d{font-size:.875rem;color:var(--k);font-weight:720}
+
+  .drum{position:relative;height:184px;overflow:hidden}
+  /* the highlight bar the selected row sits inside */
+  .drum .sel{
+    position:absolute;left:10px;right:10px;top:50%;height:38px;transform:translateY(-50%);
+    border-radius:11px;background:rgba(7,8,10,.07);pointer-events:none;
+  }
+  /* rows fade and foreshorten as they fall away from the middle */
+  .drum .rows{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center}
+  .drum .r{height:38px;display:flex;align-items:center;justify-content:center;
+           font-size:1.02rem;font-weight:520;color:var(--k);white-space:nowrap}
+  .drum .r.d1{opacity:.55;transform:scaleY(.94) perspective(260px) rotateX(26deg);font-size:.96rem}
+  .drum .r.d2{opacity:.26;transform:scaleY(.84) perspective(260px) rotateX(44deg);font-size:.9rem}
+  .drum .r.on{font-weight:680}
+  /* glass gradient over the top and bottom, as the real drum has */
+  .drum::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,0) 34%,
+                                rgba(255,255,255,0) 66%,rgba(255,255,255,.92) 100%);
+  }
+
+  /* two drums side by side — a date, or hours and minutes */
+  .drum.two .rows{flex-direction:row}
+  .drum.two .col{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+  /* ── the action-sheet variant, for short lists ── */
+  .acts{padding:0 10px 10px}
+  .acts .grp{border-radius:18px;overflow:hidden;background:rgba(255,255,255,.72);
+             -webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);
+             box-shadow:var(--g-lens), var(--g-drop)}
+  .acts .a{display:flex;align-items:center;gap:11px;padding:14px 16px;font-size:.93rem;
+           color:var(--k);border-bottom:1px solid rgba(7,8,10,.07);font-weight:520}
+  .acts .a:last-child{border-bottom:0}
+  .acts .a.on{font-weight:680}
+  .acts .a .tick{margin-left:auto;font-weight:800}
+  .acts .cancel{margin-top:9px;border-radius:18px;text-align:center;padding:15px;
+                font-size:.95rem;font-weight:720;color:var(--k);
+                background:var(--g-sweep), rgba(255,255,255,.88);
+                -webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);
+                box-shadow:var(--g-lens), var(--g-drop)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>HRMS Mobile — Screen Design</h1>
+    <p>What the staff app should contain, drawn screen by screen. Twenty-two screens across
+       five areas, including the attendance leaderboard and the birthday board.</p>
+    <p style="margin-top:12px">
+      <a href="components.html">UI components</a> &nbsp;·&nbsp; <a href="index.html">← system map</a> &nbsp;·&nbsp;
+      <a href="flowchart.html">flowcharts</a> &nbsp;·&nbsp;
+      <a href="erd.html">entity diagrams</a> &nbsp;·&nbsp;
+      <a href="schema.html">field reference</a></p>
+    <div class="counts">
+      <span>22 screens</span><span>5 tabs, one for everyone</span><span>Everyone + Manager</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#daily">Every day</a>
+  <a href="#board">Leaderboard &amp; birthdays</a>
+  <a href="#self">Self service</a>
+  <a href="#mgr">For managers</a>
+  <a href="#map">Screen map</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ═══════════════════════════════════════ -->
+<section id="daily">
+  <h2><span class="n">01</span> Every day</h2>
+  <p class="lede">The screens someone opens without thinking about it. Clocking in has to be
+     the first thing visible — if it takes more than one tap from opening the app, people go
+     back to the wall scanner.</p>
+
+  <div class="rail">
+
+    <!-- HOME -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>8:04</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar">
+          <div><h3>Good morning, Ravy</h3><div class="sub">Wednesday, 8 October</div></div>
+          <div class="av" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33)">NR</div>
+        </div>
+        <div class="body">
+          <div class="hero">
+            <div class="lbl">You clocked in</div>
+            <div class="big">07:52</div>
+            <div class="sm">8 minutes early · Head Office</div>
+          </div>
+          <button class="btn r">Clock out</button>
+          <div class="quick">
+            <div><div class="qi" style="background:var(--brand-soft)">🏖</div><span>Leave</span></div>
+            <div><div class="qi" style="background:var(--ok-soft)">⏱</div><span>Overtime</span></div>
+            <div><div class="qi" style="background:var(--warn-soft)">💵</div><span>Payslip</span></div>
+            <div><div class="qi" style="background:#f0ecfd">📋</div><span>More</span></div>
+          </div>
+          <div class="sechead">This month <a>See all</a></div>
+          <div class="card" style="display:flex;justify-content:space-around;text-align:center">
+            <div><div style="font-size:1.1rem;font-weight:700">18</div><div class="mt">Present</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--warn)">2</div><div class="mt">Late</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--brand)">9</div><div class="mt">Leave left</div></div>
+          </div>
+          <div class="sechead">Coming up</div>
+          <div class="li row"><div class="av s" style="background:#3a3d44">🎂</div>
+            <div class="grow"><div class="nm">2 birthdays today</div><div class="mt">Sok Thara, Un Dara</div></div></div>
+          <div class="li row"><div class="av s" style="background:#3a3d44">🏖</div>
+            <div class="grow"><div class="nm">Pchum Ben · Friday</div><div class="mt">3 days off, in 2 days</div></div></div>
+        </div>
+        <div class="tabs">
+          <div class="on"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Home</b><span>Clock state first, then one tap to the four things people
+        actually do. Birthdays surface here so nobody misses them.</span></div>
+    </div>
+
+    <!-- CLOCK IN -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>7:51</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Clock in</h3><div class="sub">Head Office · Shift 08:00–17:00</div></div></div>
+        <div class="body" style="gap:12px">
+          <div class="meth">
+            <div><i>⛶</i>Scan QR</div>
+            <div><i>☺</i>Face ID</div>
+            <div class="on"><i>◎</i>Tap</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px">
+            <div style="width:158px;height:158px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));
+                        display:grid;place-items:center;color:#fff;box-shadow:0 10px 26px -8px rgba(85,110,230,.6)">
+              <div style="text-align:center">
+                <div style="font-size:1.9rem;font-weight:800;letter-spacing:-.02em">07:51</div>
+                <div style="font-size:.64rem;opacity:.9;margin-top:2px">tap to clock in</div>
+              </div>
+            </div>
+            <div class="card" style="width:100%">
+              <div class="row" style="margin-bottom:8px"><span style="font-size:.9rem">📍</span>
+                <div class="grow"><div class="nm">Head Office</div><div class="mt">Within 40 m of the branch</div></div>
+                <span class="pill p-ok">IN RANGE</span></div>
+              <div class="row"><span style="font-size:.9rem">⏰</span>
+                <div class="grow"><div class="nm">9 minutes early</div><div class="mt">Grace period 15 min</div></div>
+                <span class="pill p-ok">ON TIME</span></div>
+            </div>
+            <div class="mt" style="text-align:center;padding:0 8px">Location is checked once, at the
+              moment you tap. It is not tracked afterwards.</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Clock in — Tap</b><span>Three ways to clock in across the top. Tap is the
+        fallback: one big target, telling you where you are and whether you are late
+        <em>before</em> you commit.</span></div>
+    </div>
+
+    <!-- SCAN QR -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>7:51</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Clock in</h3><div class="sub">Point at the code by the door</div></div></div>
+        <div class="body" style="gap:12px">
+          <div class="meth">
+            <div class="on"><i>⛶</i>Scan QR</div>
+            <div><i>☺</i>Face ID</div>
+            <div><i>◎</i>Tap</div>
+          </div>
+          <div class="cam">
+            <div class="torch">🔦</div>
+            <div class="reticle"><i></i><i></i><i></i><i></i></div>
+            <div class="beam"></div>
+            <div class="hint">Hold the frame over the QR code<br>at the entrance</div>
+          </div>
+          <div class="card">
+            <div class="row"><span style="font-size:.9rem">🏢</span>
+              <div class="grow"><div class="nm">Head Office · Main entrance</div>
+                <div class="mt">Code rotates every 60 seconds</div></div>
+              <span class="pill p-ok">FOUND</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Clock in — Scan QR</b><span>The code on the wall changes every minute, so a
+        photograph of it is useless. Works where GPS does not — inside a concrete building.</span></div>
+    </div>
+
+    <!-- FACE ID -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>7:52</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Clock in</h3><div class="sub">Look at the camera</div></div></div>
+        <div class="body" style="gap:12px">
+          <div class="meth">
+            <div><i>⛶</i>Scan QR</div>
+            <div class="on"><i>☺</i>Face ID</div>
+            <div><i>◎</i>Tap</div>
+          </div>
+          <div class="cam">
+            <div class="liv"><b class="on"></b><b class="on"></b><b class="on"></b><b></b></div>
+            <svg class="head" width="124" height="150" viewBox="0 0 124 150" aria-hidden="true">
+              <ellipse cx="62" cy="62" rx="40" ry="48" fill="#fff"/>
+              <path d="M18 150c0-28 20-44 44-44s44 16 44 44z" fill="#fff"/>
+            </svg>
+            <div class="face ok"></div>
+            <div class="dots">
+              <i style="top:42%;left:42%"></i><i style="top:42%;left:57%"></i>
+              <i style="top:52%;left:50%"></i><i style="top:60%;left:44%"></i>
+              <i style="top:60%;left:56%"></i><i style="top:36%;left:50%"></i>
+            </div>
+            <div class="hint">Face matched · hold still<br>
+              <span style="opacity:.75">blink once to confirm you are really here</span></div>
+          </div>
+          <div class="card">
+            <div class="row"><div class="av s" style="background:var(--ok)">✓</div>
+              <div class="grow"><div class="nm">Nareth Ravy</div><div class="mt">Matched to your staff photo · 98%</div></div>
+              <span class="pill p-ok">LIVE</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Clock in — Face ID</b><span>Matched against the staff photo already on the
+        personal record. The blink is a liveness check — it is what stops someone clocking in a
+        colleague with a photo.</span></div>
+    </div>
+
+    <!-- CONFIRMED -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>7:52</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="body" style="align-items:center;justify-content:center;gap:16px;padding:0 22px">
+          <div style="width:96px;height:96px;border-radius:50%;background:var(--ok-soft);display:grid;place-items:center;
+                      border:3px solid var(--ok)">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#2a2d33" stroke-width="2.6"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"/></svg>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.02em">Clocked in</div>
+            <div style="font-size:2.3rem;font-weight:800;color:var(--ok);line-height:1.1;margin-top:2px">07:52</div>
+            <div class="mt" style="margin-top:4px">8 minutes before your shift</div>
+          </div>
+          <div class="card" style="width:100%">
+            <div class="kv"><span>Branch</span><b>Head Office</b></div>
+            <div class="kv"><span>Method</span><b>QR · main entrance</b></div>
+            <div class="kv"><span>Shift</span><b>08:00 – 17:00</b></div>
+            <div class="kv tot"><span>Status</span><b style="color:var(--ok)">On time</b></div>
+          </div>
+          <div class="card" style="width:100%;background:var(--brand-soft);border:1px solid rgba(11,11,13,.14)">
+            <div class="row"><span style="font-size:.95rem">🏆</span>
+              <div class="grow"><div class="nm">3rd in today so far</div>
+                <div class="mt">Keep it up and you move to 7th on the board</div></div></div>
+          </div>
+          <button class="btn o">Done</button>
+        </div>
+      </div></div>
+      <div class="cap"><b>Clocked in</b><span>Same confirmation however you clocked in, naming the
+        method so there is a record. The leaderboard nudge is the reward loop.</span></div>
+    </div>
+
+    <!-- MY BADGE -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>7:50</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>My badge</h3><div class="sub">For the guard to scan</div></div>
+          <div class="round">↻</div></div>
+        <div class="body" style="align-items:center;gap:14px">
+          <div class="card" style="width:100%;text-align:center;padding:18px">
+            <div class="av l" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33);margin:0 auto 9px;width:52px;height:52px">NR</div>
+            <div style="font-weight:700;font-size:.92rem">Nareth Ravy</div>
+            <div class="mt" style="margin-bottom:13px">EMP-0001 · Credit Officer</div>
+            <div style="background:#fff;border-radius:12px;padding:11px;display:inline-block">
+              <svg class="qr" data-qr="EMP-0001" width="150" height="150" viewBox="0 0 29 29" shape-rendering="crispEdges"></svg>
+            </div>
+            <div class="row" style="justify-content:center;gap:5px;margin-top:11px">
+              <span class="pill p-ok">VALID</span><span class="pill p-grey">REFRESHES IN 48 s</span></div>
+          </div>
+          <div class="mt" style="text-align:center;padding:0 12px">
+            The other way round — when the branch has a scanner at the door instead of a
+            poster, the guard scans you.</div>
+          <button class="btn o">Show on lock screen</button>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>My badge</b><span>A rotating personal QR for branches with a scanner at
+        the door rather than a poster on the wall. Same clock-in record either way.</span></div>
+    </div>
+
+    <!-- MY ATTENDANCE -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>12:30</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>My attendance</h3><div class="sub">October 2026</div></div>
+          <div class="round">📅</div></div>
+        <div class="body">
+          <div class="card">
+            <div class="cal" style="margin-bottom:8px">
+              <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+              <b class="ok">1</b><b class="ok">2</b><b class="ok">3</b><b class="late">4</b><b class="ok">5</b><b class="off">6</b><b class="off">7</b>
+              <b class="ok">8</b><b class="ok">9</b><b class="abs">10</b><b class="ok">11</b><b class="ok">12</b><b class="off">13</b><b class="off">14</b>
+              <b class="ok">15</b><b class="ok">16</b><b class="ok">17</b><b class="ok">18</b><b class="late">19</b><b class="off">20</b><b class="off">21</b>
+              <b class="ok">22</b><b class="ok">23</b><b class="ok">24</b><b class="ok">25</b><b class="ok">26</b><b class="off">27</b><b class="off">28</b>
+              <b class="ok">29</b><b class="ok">30</b><b class="now">8</b><b></b><b></b><b></b><b></b>
+            </div>
+            <div class="row" style="gap:12px;font-size:.6rem;color:var(--s-sub);flex-wrap:wrap">
+              <span class="row" style="gap:4px"><i style="width:9px;height:9px;border-radius:3px;background:var(--ok)"></i>Present</span>
+              <span class="row" style="gap:4px"><i style="width:9px;height:9px;border-radius:3px;background:var(--warn)"></i>Late</span>
+              <span class="row" style="gap:4px"><i style="width:9px;height:9px;border-radius:3px;background:var(--bad)"></i>Absent</span>
+            </div>
+          </div>
+          <div class="sechead">Recent days</div>
+          <div class="list">
+            <div class="li row"><div class="grow"><div class="nm">Wed 8 Oct</div><div class="mt">07:52 — still in</div></div>
+              <span class="pill p-ok">ON TIME</span></div>
+            <div class="li row"><div class="grow"><div class="nm">Tue 7 Oct</div><div class="mt">07:58 — 17:04</div></div>
+              <span class="pill p-ok">ON TIME</span></div>
+            <div class="li row"><div class="grow"><div class="nm">Mon 6 Oct</div><div class="mt">08:21 — 17:02 · 21 min late</div></div>
+              <span class="pill p-warn">LATE</span></div>
+            <div class="li row"><div class="grow"><div class="nm">Fri 3 Oct</div><div class="mt">Annual leave — approved</div></div>
+              <span class="pill p-brand">LEAVE</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>My attendance</b><span>A month at a glance, then the detail. Tapping a
+        day that looks wrong is where a correction request starts.</span></div>
+    </div>
+
+    <!-- PUBLIC HOLIDAYS -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>12:35</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Public holidays</h3><div class="sub">2026 · 14 days paid</div></div>
+          <div class="round">📅</div></div>
+        <div class="body">
+          <div class="hero" style="background:linear-gradient(135deg,#3a3d44,#3a3d44)">
+            <div class="lbl">Next holiday</div>
+            <div class="big" style="font-size:1.45rem">Pchum Ben</div>
+            <div class="sm">Friday 10 October · in 2 days</div>
+            <div class="row" style="margin-top:9px;gap:5px">
+              <span class="pill" style="background:rgba(255,255,255,.24);color:#fff">3 DAYS OFF</span>
+              <span class="pill" style="background:rgba(255,255,255,.24);color:#fff">FRI – SUN</span></div>
+          </div>
+
+          <div class="sechead">Coming up</div>
+          <div class="list">
+            <div class="li row">
+              <div style="text-align:center;flex:none;width:34px">
+                <div style="font-size:.95rem;font-weight:800;line-height:1">15</div>
+                <div class="mt" style="font-size:.56rem">OCT</div></div>
+              <div class="grow"><div class="nm">Commemoration Day of King Father</div>
+                <div class="mt">Thursday · 1 day</div></div>
+              <span class="pill p-ok">PAID</span></div>
+
+            <div class="li row">
+              <div style="text-align:center;flex:none;width:34px">
+                <div style="font-size:.95rem;font-weight:800;line-height:1">29</div>
+                <div class="mt" style="font-size:.56rem">OCT</div></div>
+              <div class="grow"><div class="nm">King's Coronation Day</div>
+                <div class="mt">Thursday · 1 day</div></div>
+              <span class="pill p-ok">PAID</span></div>
+
+            <div class="li row">
+              <div style="text-align:center;flex:none;width:34px">
+                <div style="font-size:.95rem;font-weight:800;line-height:1">9</div>
+                <div class="mt" style="font-size:.56rem">NOV</div></div>
+              <div class="grow"><div class="nm">Independence Day</div>
+                <div class="mt">Monday · 1 day</div></div>
+              <span class="pill p-ok">PAID</span></div>
+
+            <div class="li row">
+              <div style="text-align:center;flex:none;width:34px">
+                <div style="font-size:.95rem;font-weight:800;line-height:1">23</div>
+                <div class="mt" style="font-size:.56rem">NOV</div></div>
+              <div class="grow"><div class="nm">Water Festival</div>
+                <div class="mt">Mon – Wed · 3 days</div></div>
+              <span class="pill p-ok">PAID</span></div>
+
+            <div class="li row" style="opacity:.62">
+              <div style="text-align:center;flex:none;width:34px">
+                <div style="font-size:.95rem;font-weight:800;line-height:1">24</div>
+                <div class="mt" style="font-size:.56rem">SEP</div></div>
+              <div class="grow"><div class="nm">Constitution Day</div>
+                <div class="mt">Already passed</div></div>
+              <span class="pill p-grey">PAST</span></div>
+          </div>
+
+          <div class="card" style="background:var(--brand-soft);border:1px solid rgba(11,11,13,.14)">
+            <div class="row"><span style="font-size:.95rem">💡</span>
+              <div class="grow"><div class="nm">Rostered on a holiday?</div>
+                <div class="mt">Those hours are paid as holiday work, not as a normal day.</div></div></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Public holidays</b><span>The next one with a countdown, then the rest of
+        the year. Past ones stay listed but dimmed, so the year reads as a whole when someone
+        is planning leave around it.</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<section id="board">
+  <h2><span class="n">02</span> Leaderboard &amp; birthdays</h2>
+  <p class="lede">The two you asked for. The ranking is the delicate one — a board of early
+     birds is a nice thing to be on, a board of latecomers is a public telling-off. The
+     design below keeps the praise public and the problem private.</p>
+
+  <div class="rail">
+
+    <!-- EARLY BIRDS -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>9:15</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Leaderboard</h3><div class="sub">October · Head Office</div></div>
+          <div class="round">⚙</div></div>
+        <div class="body">
+          <div class="row" style="background:var(--s-card);border-radius:11px;padding:3px;gap:3px">
+            <div style="flex:1;text-align:center;font-size:.67rem;font-weight:700;padding:7px;border-radius:9px;
+                        background:var(--brand);color:#fff">Early birds</div>
+            <div style="flex:1;text-align:center;font-size:.67rem;font-weight:600;padding:7px;color:var(--s-sub)">Hours</div>
+            <div style="flex:1;text-align:center;font-size:.67rem;font-weight:600;padding:7px;color:var(--s-sub)">Attendance</div>
+          </div>
+
+          <div class="podium">
+            <div class="pod">
+              <div class="av" style="background:#8a8f99">ST</div>
+              <div class="who">Sok Thara</div>
+              <div class="base" style="background:var(--silver);height:54px">
+                <div class="rk">2</div><div class="tm">07:38 avg</div></div>
+            </div>
+            <div class="pod">
+              <div class="av l" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33)">NR</div>
+              <div class="who">Nareth Ravy</div>
+              <div class="base" style="background:var(--gold);height:72px">
+                <div class="rk">1</div><div class="tm">07:31 avg</div></div>
+            </div>
+            <div class="pod">
+              <div class="av" style="background:#6e737d">SK</div>
+              <div class="who">Sok Kosal</div>
+              <div class="base" style="background:var(--bronze);height:42px">
+                <div class="rk">3</div><div class="tm">07:45 avg</div></div>
+            </div>
+          </div>
+
+          <div class="sechead">Rest of the board</div>
+          <div class="list">
+            <div class="li row"><b style="font-size:.76rem;width:15px;color:var(--s-sub)">4</b>
+              <div class="av s" style="background:#2a2d33">UD</div>
+              <div class="grow"><div class="nm">Un Dara</div><div class="mt">Finance</div></div>
+              <div style="text-align:right"><div class="nm">07:49</div><div class="mt">avg in</div></div></div>
+            <div class="li row"><b style="font-size:.76rem;width:15px;color:var(--s-sub)">5</b>
+              <div class="av s" style="background:#2a2d33">SS</div>
+              <div class="grow"><div class="nm">Sen Sela</div><div class="mt">Operations</div></div>
+              <div style="text-align:right"><div class="nm">07:54</div><div class="mt">avg in</div></div></div>
+            <div class="li row" style="outline:2px solid var(--brand);outline-offset:-2px">
+              <b style="font-size:.76rem;width:15px;color:var(--brand)">9</b>
+              <div class="av s" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33)">NR</div>
+              <div class="grow"><div class="nm">You</div><div class="mt">↑ 3 places this month</div></div>
+              <div style="text-align:right"><div class="nm">08:02</div><div class="mt">avg in</div></div></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div class="on"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Early birds</b><span>Top three on a podium, then the list, with your own
+        row pinned so you always know where you stand. Average clock-in time, not a single
+        lucky day.</span></div>
+    </div>
+
+    <!-- MOST HOURS WORKED -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>9:16</span><span class="ic">&#9646;&#9646;&#9646; <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Leaderboard</h3><div class="sub">October &#183; Head Office</div></div>
+          <div class="round">&#9881;</div></div>
+        <div class="body">
+          <div class="row" style="background:var(--s-card);border-radius:11px;padding:3px;gap:3px">
+            <div style="flex:1;text-align:center;font-size:.67rem;font-weight:600;padding:7px;color:var(--s-sub)">Early birds</div>
+            <div style="flex:1;text-align:center;font-size:.67rem;font-weight:700;padding:7px;border-radius:9px;
+                        background:var(--brand);color:#fff">Hours</div>
+            <div style="flex:1;text-align:center;font-size:.67rem;font-weight:600;padding:7px;color:var(--s-sub)">Attendance</div>
+          </div>
+
+          <div class="card" style="background:linear-gradient(135deg,#2a2d33,#15b36b);color:#fff;border:0">
+            <div class="row">
+              <div class="grow">
+                <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85">Hours worked this month</div>
+                <div style="font-size:1.8rem;font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-top:2px">168<span style="font-size:.9rem;font-weight:600">h 20m</span></div>
+                <div style="font-size:.7rem;opacity:.9;margin-top:2px">You &#183; 6th of 11 &#183; 12h overtime</div>
+              </div>
+              <div style="text-align:center;flex:none">
+                <div style="font-size:1.5rem">&#9201;</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sechead">Most hours this month</div>
+          <div class="list">
+            <div class="li row">
+              <b style="font-size:.86rem;width:17px;color:var(--gold)">1</b>
+              <div class="av s" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33)">SK</div>
+              <div class="grow"><div class="nm">Sok Kosal</div>
+                <div class="row" style="gap:4px;margin-top:3px">
+                  <div style="flex:1;height:4px;border-radius:2px;background:#e4e8ef;overflow:hidden">
+                    <div style="width:100%;height:100%;background:var(--ok)"></div></div></div>
+                <div class="mt" style="margin-top:3px">186h &#183; 22h overtime</div></div>
+              <div style="text-align:right"><div class="nm" style="color:var(--ok)">186h</div></div></div>
+
+            <div class="li row">
+              <b style="font-size:.86rem;width:17px;color:var(--silver)">2</b>
+              <div class="av s" style="background:#8a8f99">ST</div>
+              <div class="grow"><div class="nm">Sok Thara</div>
+                <div class="row" style="gap:4px;margin-top:3px">
+                  <div style="flex:1;height:4px;border-radius:2px;background:#e4e8ef;overflow:hidden">
+                    <div style="width:95%;height:100%;background:var(--ok)"></div></div></div>
+                <div class="mt" style="margin-top:3px">178h &#183; 16h overtime</div></div>
+              <div style="text-align:right"><div class="nm">178h</div></div></div>
+
+            <div class="li row">
+              <b style="font-size:.86rem;width:17px;color:var(--bronze)">3</b>
+              <div class="av s" style="background:#6e737d">SS</div>
+              <div class="grow"><div class="nm">Sen Sela</div>
+                <div class="row" style="gap:4px;margin-top:3px">
+                  <div style="flex:1;height:4px;border-radius:2px;background:#e4e8ef;overflow:hidden">
+                    <div style="width:92%;height:100%;background:var(--ok)"></div></div></div>
+                <div class="mt" style="margin-top:3px">172h &#183; 10h overtime</div></div>
+              <div style="text-align:right"><div class="nm">172h</div></div></div>
+
+            <div class="li row">
+              <b style="font-size:.86rem;width:17px;color:var(--s-sub)">4</b>
+              <div class="av s" style="background:#2a2d33">UD</div>
+              <div class="grow"><div class="nm">Un Dara</div>
+                <div class="row" style="gap:4px;margin-top:3px">
+                  <div style="flex:1;height:4px;border-radius:2px;background:#e4e8ef;overflow:hidden">
+                    <div style="width:91%;height:100%;background:var(--brand)"></div></div></div>
+                <div class="mt" style="margin-top:3px">170h &#183; 8h overtime</div></div>
+              <div style="text-align:right"><div class="nm">170h</div></div></div>
+
+            <div class="li row" style="outline:2px solid var(--brand);outline-offset:-2px">
+              <b style="font-size:.86rem;width:17px;color:var(--brand)">6</b>
+              <div class="av s" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33)">NR</div>
+              <div class="grow"><div class="nm">You</div>
+                <div class="row" style="gap:4px;margin-top:3px">
+                  <div style="flex:1;height:4px;border-radius:2px;background:#e4e8ef;overflow:hidden">
+                    <div style="width:90%;height:100%;background:var(--brand)"></div></div></div>
+                <div class="mt" style="margin-top:3px">168h 20m &#183; 12h overtime</div></div>
+              <div style="text-align:right"><div class="nm" style="color:var(--brand)">168h</div></div></div>
+          </div>
+
+          <div class="card" style="background:var(--warn-soft);border:1px solid rgba(11,11,13,.14)">
+            <div class="row"><span style="font-size:.95rem">&#9888;</span>
+              <div class="grow"><div class="nm">Sok Kosal is at 22h overtime</div>
+                <div class="mt">Over the 20h monthly guideline &#183; HR has been notified</div></div></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div class="on"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Most hours worked</b><span>Total hours with overtime called out separately,
+        and a bar so the gap between people is visible. The amber card is the flip side &#8212; too
+        many hours is a problem to catch, not a prize.</span></div>
+    </div>
+
+    <!-- MY PUNCTUALITY (private) -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>9:16</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>My punctuality</h3><div class="sub">Only you can see this</div></div>
+          <div class="round">🔒</div></div>
+        <div class="body">
+          <div class="hero" style="background:linear-gradient(135deg,#3a3d44,#3a3d44)">
+            <div class="lbl">Late this month</div>
+            <div class="big">2 <span style="font-size:.9rem;font-weight:500">times</span></div>
+            <div class="sm">34 minutes in total · about $1.40 deducted</div>
+          </div>
+          <div class="card">
+            <div class="sechead" style="margin:0 0 8px">Last six months</div>
+            <div class="row" style="align-items:flex-end;gap:7px;height:76px">
+              <div style="flex:1;text-align:center"><div style="height:18px;background:var(--ok);border-radius:4px 4px 0 0"></div><div class="mt" style="margin-top:3px">May</div></div>
+              <div style="flex:1;text-align:center"><div style="height:34px;background:var(--warn);border-radius:4px 4px 0 0"></div><div class="mt" style="margin-top:3px">Jun</div></div>
+              <div style="flex:1;text-align:center"><div style="height:10px;background:var(--ok);border-radius:4px 4px 0 0"></div><div class="mt" style="margin-top:3px">Jul</div></div>
+              <div style="flex:1;text-align:center"><div style="height:52px;background:var(--bad);border-radius:4px 4px 0 0"></div><div class="mt" style="margin-top:3px">Aug</div></div>
+              <div style="flex:1;text-align:center"><div style="height:26px;background:var(--warn);border-radius:4px 4px 0 0"></div><div class="mt" style="margin-top:3px">Sep</div></div>
+              <div style="flex:1;text-align:center"><div style="height:22px;background:var(--warn);border-radius:4px 4px 0 0"></div><div class="mt" style="margin-top:3px">Oct</div></div>
+            </div>
+          </div>
+          <div class="sechead">The late days</div>
+          <div class="list">
+            <div class="li row"><div class="grow"><div class="nm">Mon 6 Oct</div><div class="mt">08:21 · 21 minutes</div></div>
+              <span class="pill p-grey">EXPLAIN</span></div>
+            <div class="li row"><div class="grow"><div class="nm">Fri 19 Sep</div><div class="mt">08:13 · 13 minutes</div></div>
+              <span class="pill p-ok">EXCUSED</span></div>
+          </div>
+          <button class="btn o">Request an excuse</button>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div class="on"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>My punctuality — private</b><span>The "most late" ranking lives here as
+        <em>your own</em> record, not a public list. Same data, and it leads to a request for
+        an excuse rather than to embarrassment.</span></div>
+    </div>
+
+    <!-- BIRTHDAYS -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>9:18</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Birthdays</h3><div class="sub">October</div></div><div class="round">🎂</div></div>
+        <div class="body">
+          <div class="card" style="background:linear-gradient(135deg,#f6f7f9,#eeeff2);border:1px solid rgba(11,11,13,.12)">
+            <div class="sechead" style="color:#3a3d44;margin:0 0 9px">🎉 Today</div>
+            <div class="row" style="margin-bottom:10px">
+              <div class="av l" style="background:#3a3d44">ST</div>
+              <div class="grow"><div class="nm" style="font-size:.88rem">Sok Thara</div>
+                <div class="mt">Credit Officer · turning 29</div></div>
+            </div>
+            <div class="row" style="margin-bottom:11px">
+              <div class="av l" style="background:#2a2d33">UD</div>
+              <div class="grow"><div class="nm" style="font-size:.88rem">Un Dara</div>
+                <div class="mt">Finance · turning 34</div></div>
+            </div>
+            <button class="btn" style="background:#3a3d44">Send birthday wishes</button>
+          </div>
+
+          <div class="sechead">Later this month</div>
+          <div class="list">
+            <div class="li row"><div class="av s" style="background:#2a2d33">SS</div>
+              <div class="grow"><div class="nm">Sen Sela</div><div class="mt">Operations</div></div>
+              <span class="pill p-grey">14 OCT</span></div>
+            <div class="li row"><div class="av s" style="background:#0b0b0d">SK</div>
+              <div class="grow"><div class="nm">Sok Kosal</div><div class="mt">Head Office</div></div>
+              <span class="pill p-grey">22 OCT</span></div>
+            <div class="li row"><div class="av s" style="background:#0b0b0d">CP</div>
+              <div class="grow"><div class="nm">Chhim Putheara</div><div class="mt">IT</div></div>
+              <span class="pill p-grey">29 OCT</span></div>
+          </div>
+
+          <div class="sechead">Work anniversaries</div>
+          <div class="list">
+            <div class="li row"><div class="av s" style="background:#8a8f99">NR</div>
+              <div class="grow"><div class="nm">Nareth Ravy</div><div class="mt">5 years on 11 Oct</div></div>
+              <span class="pill p-brand">5 YRS</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div class="on"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Birthdays</b><span>Today's in a warm card you cannot miss, the rest of the
+        month below. Work anniversaries ride along — same idea, same data shape.</span></div>
+    </div>
+
+    <!-- RECOGNITION -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>9:20</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Recognition</h3><div class="sub">Head Office</div></div><div class="round">🏅</div></div>
+        <div class="body">
+          <div class="hero" style="background:linear-gradient(135deg,#2a2d33,#15b36b)">
+            <div class="lbl">Your points this year</div>
+            <div class="big">340</div>
+            <div class="sm">4 awards · 2nd in your department</div>
+          </div>
+          <div class="sechead">Recently given</div>
+          <div class="list">
+            <div class="li">
+              <div class="row" style="margin-bottom:6px">
+                <div class="av s" style="background:#3a3d44">ST</div>
+                <div class="grow"><div class="nm">Sok Thara</div><div class="mt">from Un Dara · 2 days ago</div></div>
+                <span class="pill p-ok">+50</span></div>
+              <div class="mt" style="font-size:.72rem;color:var(--s-ink)">"Covered two shifts at short notice."</div>
+              <div class="row" style="margin-top:7px;gap:5px"><span class="pill p-brand">TEAM PLAYER</span></div>
+            </div>
+            <div class="li">
+              <div class="row" style="margin-bottom:6px">
+                <div class="av s" style="background:#0b0b0d">SK</div>
+                <div class="grow"><div class="nm">Sok Kosal</div><div class="mt">from HR · last week</div></div>
+                <span class="pill p-ok">+100</span></div>
+              <div class="row" style="margin-top:3px;gap:5px"><span class="pill p-brand">EMPLOYEE OF THE MONTH</span></div>
+            </div>
+          </div>
+          <button class="btn g">Recognise a colleague</button>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div class="on"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Recognition</b><span>The positive counterpart to the leaderboard. Anyone can
+        give it, which is what keeps it from feeling like management theatre.</span></div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <b>One design decision worth agreeing before it is built.</b> A public "most late" ranking
+    names and shames, and the people on it are often the ones with the longest commute or a
+    child to drop off. The screens above split it: <b>early birds are public</b>, because
+    being praised in front of colleagues is the point — and <b>lateness is private</b>, shown
+    only to you and your manager, where it leads to an excuse request instead of a joke in the
+    group chat. Same data either way. Say if you want it public and I will draw that version.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<section id="self">
+  <h2><span class="n">03</span> Self service</h2>
+  <p class="lede">The things people currently have to walk to HR for.</p>
+
+  <div class="rail">
+
+    <!-- LEAVE -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>10:02</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Leave</h3><div class="sub">9 of 18 days left</div></div><div class="round">＋</div></div>
+        <div class="body">
+          <div class="card" style="display:flex;justify-content:space-around;text-align:center">
+            <div><div style="font-size:1.2rem;font-weight:700;color:var(--ok)">9</div><div class="mt">Remaining</div></div>
+            <div><div style="font-size:1.2rem;font-weight:700">8</div><div class="mt">Taken</div></div>
+            <div><div style="font-size:1.2rem;font-weight:700;color:var(--warn)">1</div><div class="mt">Pending</div></div>
+          </div>
+          <div class="sechead">My requests</div>
+          <div class="list">
+            <div class="li">
+              <div class="row"><div class="grow"><div class="nm">Annual leave · 2 days</div>
+                <div class="mt">20–21 Oct · family event</div></div>
+                <span class="pill p-warn">WITH HR</span></div>
+              <div class="row" style="margin-top:9px;gap:0">
+                <div style="flex:1;height:3px;background:var(--ok);border-radius:2px"></div>
+                <div style="flex:1;height:3px;background:var(--ok);border-radius:2px"></div>
+                <div style="flex:1;height:3px;background:#e4e8ef;border-radius:2px"></div></div>
+              <div class="row" style="margin-top:4px;font-size:.57rem;color:var(--s-sub)">
+                <span style="flex:1">Sent</span><span style="flex:1;text-align:center">Manager ✓</span>
+                <span style="flex:1;text-align:right">HR</span></div>
+            </div>
+            <div class="li row"><div class="grow"><div class="nm">Sick leave · 1 day</div>
+              <div class="mt">3 Oct</div></div><span class="pill p-ok">APPROVED</span></div>
+            <div class="li row"><div class="grow"><div class="nm">Annual leave · 5 days</div>
+              <div class="mt">11–15 Aug</div></div><span class="pill p-ok">APPROVED</span></div>
+            <div class="li row"><div class="grow"><div class="nm">Unpaid · 1 day</div>
+              <div class="mt">2 Jul · not enough balance</div></div><span class="pill p-bad">REJECTED</span></div>
+          </div>
+          <button class="btn">Request leave</button>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div class="on"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Leave</b><span>Balance at the top, then every request with a progress bar
+        showing exactly which desk it is sitting on.</span></div>
+    </div>
+
+    <!-- NEW REQUEST -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>10:04</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Request leave</h3></div><div class="round">✕</div></div>
+        <div class="body">
+          <div class="iosrow"><span class="rl">Leave type</span><span class="rv">Annual leave</span><span class="cv"><i></i><i></i></span></div>
+          <div class="row" style="gap:9px">
+            <div class="field grow"><div class="fl">From</div><div class="fv">20 Oct</div></div>
+            <div class="field grow"><div class="fl">To</div><div class="fv">21 Oct</div></div>
+          </div>
+          <div class="field"><div class="fl">Half day?</div>
+            <div class="row" style="margin-top:5px;gap:6px">
+              <span class="pill p-brand" style="padding:5px 11px">No</span>
+              <span class="pill p-grey" style="padding:5px 11px">Morning</span>
+              <span class="pill p-grey" style="padding:5px 11px">Afternoon</span></div></div>
+          <div class="iosrow"><span class="rl">Reason</span><span class="rv ph">Family event out of town…</span><span class="chev">&#8250;</span></div>
+          <div class="card" style="background:var(--brand-soft);border:1px solid rgba(11,11,13,.14)">
+            <div class="kv"><span>Days requested</span><b>2</b></div>
+            <div class="kv"><span>Balance now</span><b>9</b></div>
+            <div class="kv tot"><span>Balance after</span><b style="color:var(--brand)">7 days</b></div>
+          </div>
+          <div class="mt" style="text-align:center">Goes to Sok Kosal, then HR.</div>
+          <button class="btn">Submit request</button>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div class="on"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>New request</b><span>Shows the balance after the request before you send
+        it, and names who it goes to. Both stop the commonest support question.</span></div>
+    </div>
+
+    <!-- PAYSLIP -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>10:08</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Payslip</h3><div class="sub">September 2026</div></div><div class="round">⬇</div></div>
+        <div class="body">
+          <div class="hero">
+            <div class="lbl">Net pay</div>
+            <div class="big">$278.61</div>
+            <div class="sm">Paid 30 Sep · to bank ••••6554</div>
+          </div>
+          <div class="card">
+            <div class="sechead" style="margin:0 0 5px">Earnings</div>
+            <div class="kv"><span>Basic salary</span><b>300.00</b></div>
+            <div class="kv tot"><span>Total</span><b>$300.00</b></div>
+          </div>
+          <div class="card">
+            <div class="sechead" style="margin:0 0 5px">Deductions</div>
+            <div class="kv"><span>Absence · 1 day</span><b style="color:var(--bad)">−13.64</b></div>
+            <div class="kv"><span>Late · 67 min</span><b style="color:var(--bad)">−1.90</b></div>
+            <div class="kv"><span>NSSF pension</span><b style="color:var(--bad)">−5.85</b></div>
+            <div class="kv tot"><span>Total</span><b style="color:var(--bad)">−$21.39</b></div>
+          </div>
+          <div class="card" style="background:#f2f4f8">
+            <div class="sechead" style="margin:0 0 5px">Paid by the company</div>
+            <div class="kv"><span>NSSF pension · health · risk</span><b>15.80</b></div>
+            <div class="mt" style="margin-top:3px">Not taken from your pay.</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div class="on"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Payslip</b><span>Net pay first, then why. Employer cost shown separately
+        and labelled as not deducted — people always ask.</span></div>
+    </div>
+
+    <!-- ANNOUNCEMENTS -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>10:11</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Noticeboard</h3></div><div class="round">🔔</div></div>
+        <div class="body">
+          <div class="li" style="border-left:3px solid var(--bad)">
+            <div class="row" style="margin-bottom:5px"><span class="pill p-bad">URGENT</span>
+              <span class="pill p-grey">📌 PINNED</span></div>
+            <div class="nm" style="font-size:.86rem">Office closed Friday</div>
+            <div class="mt" style="margin-top:3px">Pchum Ben holiday. The office is closed all day Friday 10 October.</div>
+            <div class="mt" style="margin-top:6px;color:#9aa0aa">HR · 2 days ago</div>
+          </div>
+          <div class="li">
+            <div class="row" style="margin-bottom:5px"><span class="pill p-brand">POLICY</span></div>
+            <div class="nm" style="font-size:.86rem">New overtime approval rule</div>
+            <div class="mt" style="margin-top:3px">From November, overtime must be approved before it is worked, not after.</div>
+            <div class="mt" style="margin-top:6px;color:#9aa0aa">Chief Operation Officer · 5 days ago</div>
+          </div>
+          <div class="li">
+            <div class="row" style="margin-bottom:5px"><span class="pill p-ok">EVENT</span></div>
+            <div class="nm" style="font-size:.86rem">Annual staff outing — sign up</div>
+            <div class="mt" style="margin-top:3px">Kep, 22–23 November. Places are limited.</div>
+            <div class="mt" style="margin-top:6px;color:#9aa0aa">HR · last week</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Noticeboard</b><span>Pinned and urgent float to the top, exactly as the
+        announcement record already says they should.</span></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>10:14</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Me</h3></div><div class="round">⚙</div></div>
+        <div class="body">
+          <div class="card" style="text-align:center">
+            <div class="av l" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33);margin:0 auto 8px;width:58px;height:58px;font-size:1.1rem">NR</div>
+            <div style="font-weight:700;font-size:.95rem">Nareth Ravy</div>
+            <div class="mt">Credit Officer · Head Office</div>
+            <div class="row" style="justify-content:center;gap:6px;margin-top:8px">
+              <span class="pill p-grey">EMP-0001</span><span class="pill p-ok">PERMANENT</span></div>
+          </div>
+          <div class="sechead">My record</div>
+          <div class="list">
+            <div class="li row"><span>📄</span><div class="grow"><div class="nm">Contract</div>
+              <div class="mt">From 1 Jan 2021 · $300 / month</div></div><span style="color:#c3cbd8">›</span></div>
+            <div class="li row"><span>🎓</span><div class="grow"><div class="nm">Training</div>
+              <div class="mt">2 courses · 1 in progress</div></div><span style="color:#c3cbd8">›</span></div>
+            <div class="li row"><span>🏅</span><div class="grow"><div class="nm">Certificates</div>
+              <div class="mt">1 expires in 3 months</div></div>
+              <span class="pill p-warn">1</span></div>
+            <div class="li row"><span>💻</span><div class="grow"><div class="nm">Assets held</div>
+              <div class="mt">Laptop · phone</div></div><span style="color:#c3cbd8">›</span></div>
+            <div class="li row"><span>👨‍👩‍👧</span><div class="grow"><div class="nm">Family &amp; tax relief</div>
+              <div class="mt">Spouse · 2 children</div></div><span style="color:#c3cbd8">›</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Me</b><span>Everything the system already holds about you, in one place.
+        The expiring certificate badge is the kind of nudge nobody gets today.</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<section id="mgr">
+  <h2><span class="n">04</span> For managers</h2>
+  <p class="lede">The same app and <b>the same five tabs</b> &#8212; nothing moves. A switch at the top
+     flips every tab between <b>Staff</b> and <b>Operation</b>, the way Binance flips between Lite and Pro.
+     The switch only appears for someone with people reporting to them.</p>
+
+  <div class="rail">
+
+    <!-- APPROVALS -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>11:30</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Requests</h3><div class="sub">4 waiting on you</div></div>
+          <div class="round" style="background:var(--bad);color:#fff;font-size:.68rem;font-weight:700">4</div></div>
+        <div class="body">
+          <div class="modesw" style="align-self:center">
+            <span>&#128100; Staff</span><span class="on">&#128101; Operation</span></div>
+          <div class="li" style="border-left:3px solid var(--warn)">
+            <div class="row" style="margin-bottom:7px">
+              <div class="av s" style="background:#3a3d44">ST</div>
+              <div class="grow"><div class="nm">Sok Thara</div><div class="mt">Annual leave · 2 days</div></div>
+              <span class="pill p-warn">2 DAYS OLD</span></div>
+            <div class="mt" style="margin-bottom:9px">20–21 Oct · family event · 9 days balance left</div>
+            <div class="row" style="gap:7px">
+              <button class="btn g" style="padding:8px;font-size:.74rem">Approve</button>
+              <button class="btn" style="padding:8px;font-size:.74rem;background:#eef1f5;color:var(--s-sub)">Reject</button></div>
+          </div>
+          <div class="li">
+            <div class="row" style="margin-bottom:7px">
+              <div class="av s" style="background:#2a2d33">SS</div>
+              <div class="grow"><div class="nm">Sen Sela</div><div class="mt">Overtime · 3 hours</div></div></div>
+            <div class="mt" style="margin-bottom:9px">Saturday 11 Oct · month-end closing</div>
+            <div class="row" style="gap:7px">
+              <button class="btn g" style="padding:8px;font-size:.74rem">Approve</button>
+              <button class="btn" style="padding:8px;font-size:.74rem;background:#eef1f5;color:var(--s-sub)">Reject</button></div>
+          </div>
+          <div class="li row"><div class="av s" style="background:#2a2d33">UD</div>
+            <div class="grow"><div class="nm">Un Dara</div><div class="mt">Late excuse · 6 Oct</div></div>
+            <span style="color:#c3cbd8">›</span></div>
+          <div class="li row"><div class="av s" style="background:#0b0b0d">SK</div>
+            <div class="grow"><div class="nm">Sok Kosal</div><div class="mt">Asset request · laptop</div></div>
+            <span style="color:#c3cbd8">›</span></div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div class="on"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Requests &#183; Operation</b><span>Same tab, flipped to Operation. Approve or reject
+        without opening anything &#8212; each card carries the one fact needed to decide.</span></div>
+    </div>
+
+    <!-- MANAGER HOME -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>8:05</span><span class="ic">&#9646;&#9646;&#9646; <span class="bat"></span></span></div>
+        <div class="appbar">
+          <div><h3>Good morning, Kosal</h3><div class="sub">Wednesday, 8 October</div></div>
+          <div class="av" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33)">SK</div>
+        </div>
+        <div class="body">
+          <div class="modesw" style="align-self:center">
+            <span>&#128100; Staff</span><span class="on">&#128101; Operation</span></div>
+
+          <div class="mgrbar">
+            <div><div class="t">Operation mode &#183; 11 people</div>
+              <div class="s">You are seeing the team, not yourself</div></div>
+            <span class="pill" style="background:rgba(255,255,255,.26);color:#fff">SWITCH</span>
+          </div>
+
+          <div class="card" style="display:flex;justify-content:space-around;text-align:center">
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--ok)">8</div><div class="mt">In</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--warn)">1</div><div class="mt">Late</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--brand)">1</div><div class="mt">Leave</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--bad)">1</div><div class="mt">No scan</div></div>
+          </div>
+
+          <div class="quick">
+            <div><div class="qi" style="background:var(--bad-soft);position:relative">&#9993;
+              <span style="position:absolute;top:-4px;right:-4px;background:var(--bad);color:#fff;border-radius:9px;
+                           font-size:.52rem;font-weight:700;padding:1px 4px">4</span></div><span>Approve</span></div>
+            <div><div class="qi" style="background:var(--ok-soft)">&#128101;</div><span>Team</span></div>
+            <div><div class="qi" style="background:var(--brand-soft)">&#128202;</div><span>Report</span></div>
+            <div><div class="qi" style="background:#f0ecfd">&#128203;</div><span>More</span></div>
+          </div>
+
+          <div class="sechead">Needs you today <a>See all</a></div>
+          <div class="list">
+            <div class="li row" style="border-left:3px solid var(--bad)">
+              <div class="av s" style="background:#0b0b0d">CP</div>
+              <div class="grow"><div class="nm">Chhim Putheara has not scanned</div>
+                <div class="mt">Shift started 35 minutes ago</div></div></div>
+            <div class="li row" style="border-left:3px solid var(--warn)">
+              <div class="av s" style="background:#3a3d44">ST</div>
+              <div class="grow"><div class="nm">Leave request, 2 days old</div>
+                <div class="mt">Sok Thara &#183; 20&#8211;21 Oct</div></div></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="on"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Home &#183; Operation</b><span>The same Home tab with the switch set to Operation.
+        Nothing moved in the bar &#8212; the clock card became the team roll call, and the quick
+        actions became manager ones.</span></div>
+    </div>
+
+    <!-- ME · MANAGER, DROPDOWN OPEN -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>10:14</span><span class="ic">&#9646;&#9646;&#9646; <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Me</h3></div><div class="round">&#9881;</div></div>
+        <div class="body">
+          <div class="card" style="text-align:center;padding:12px">
+            <div class="av l" style="background:linear-gradient(135deg,#0b0b0d,#2a2d33);margin:0 auto 7px;width:48px;height:48px">SK</div>
+            <div style="font-weight:700;font-size:.9rem">Sok Kosal</div>
+            <div class="mt">Branch Manager &#183; Head Office</div>
+            <div class="row" style="justify-content:center;gap:6px;margin-top:7px">
+              <span class="pill p-grey">EMP-0003</span><span class="pill p-brand">MANAGES 11</span></div>
+          </div>
+
+          <div class="mode">
+            <div class="pick">
+              <div class="ico">&#8646;</div>
+              <div class="cv"><div class="k">View mode</div><div class="v">Staff &#8212; my own record</div></div>
+              <div class="ch">&#9652;</div>
+            </div>
+            <div class="opts">
+              <div class="opt on">
+                <div class="rad"></div>
+                <div class="grow"><div class="ot">Staff</div>
+                  <div class="os">My clock, my leave, my payslip</div></div>
+              </div>
+              <div class="opt">
+                <div class="rad"></div>
+                <div class="grow"><div class="ot">Operation</div>
+                  <div class="os">Operations &#183; 11 people &#183; 4 approvals waiting</div></div>
+                <span class="pill p-bad">4</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt" style="padding:0 4px;margin-top:-3px">Every tab follows this. Switch to
+            Operation and Home becomes the team roll call, Requests becomes approvals.</div>
+
+          <div class="sechead">My record</div>
+          <div class="list">
+            <div class="li row"><span>&#128196;</span><div class="grow"><div class="nm">Contract</div>
+              <div class="mt">From 3 Mar 2019 &#183; $500 / month</div></div><span style="color:#c3cbd8">&#8250;</span></div>
+            <div class="li row"><span>&#127891;</span><div class="grow"><div class="nm">Training</div>
+              <div class="mt">4 courses</div></div><span style="color:#c3cbd8">&#8250;</span></div>
+            <div class="li row"><span>&#128187;</span><div class="grow"><div class="nm">Assets held</div>
+              <div class="mt">Laptop &#183; phone &#183; vehicle</div></div><span style="color:#c3cbd8">&#8250;</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Me &#183; the mode dropdown</b><span>Where the switch really lives. A manager
+        picks Staff or Operation here and the whole app follows; the pill on the other screens is
+        just the quick way back. Staff who manage nobody never see this card.</span></div>
+    </div>
+
+    <!-- TEAM TODAY -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen">
+        <div class="sbar"><span>11:33</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="appbar"><div><h3>Attendance</h3><div class="sub">8 October &#183; 11 people</div></div>
+          <div class="round">&#128269;</div></div>
+        <div class="body">
+          <div class="modesw" style="align-self:center">
+            <span>&#128100; Staff</span><span class="on">&#128101; Operation</span></div>
+          <div class="card" style="display:flex;justify-content:space-around;text-align:center">
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--ok)">8</div><div class="mt">In</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--warn)">1</div><div class="mt">Late</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--brand)">1</div><div class="mt">Leave</div></div>
+            <div><div style="font-size:1.1rem;font-weight:700;color:var(--bad)">1</div><div class="mt">No scan</div></div>
+          </div>
+          <div class="sechead">Needs a look</div>
+          <div class="list">
+            <div class="li row" style="border-left:3px solid var(--bad)">
+              <div class="av s" style="background:#0b0b0d">CP</div>
+              <div class="grow"><div class="nm">Chhim Putheara</div><div class="mt">No scan — 11:33 and nothing yet</div></div></div>
+            <div class="li row" style="border-left:3px solid var(--warn)">
+              <div class="av s" style="background:#3a3d44">UD</div>
+              <div class="grow"><div class="nm">Un Dara</div><div class="mt">In at 08:24 · 24 min late</div></div></div>
+          </div>
+          <div class="sechead">Everyone else</div>
+          <div class="list">
+            <div class="li row"><div class="av s" style="background:#2a2d33">NR</div>
+              <div class="grow"><div class="nm">Nareth Ravy</div><div class="mt">In 07:52</div></div>
+              <span class="pill p-ok">IN</span></div>
+            <div class="li row"><div class="av s" style="background:#2a2d33">ST</div>
+              <div class="grow"><div class="nm">Sok Thara</div><div class="mt">In 07:38</div></div>
+              <span class="pill p-ok">IN</span></div>
+            <div class="li row"><div class="av s" style="background:#0b0b0d">SS</div>
+              <div class="grow"><div class="nm">Sen Sela</div><div class="mt">Annual leave</div></div>
+              <span class="pill p-brand">LEAVE</span></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Home</div>
+          <div class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</div>
+          <div><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 5-7 4 4"/><path d="M3 21h18"/></svg>Board</div>
+          <div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Requests</div>
+          <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Team today</b><span>Exceptions first — the no-scan and the late person
+        — then everyone else. A manager should not have to read eleven rows to find the one
+        that matters.</span></div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="unit">
+      <div class="phone"><div class="notch"></div><div class="screen" style="background:linear-gradient(165deg,#101216,#23262c 60%,#2a2d33)">
+        <div class="sbar" style="color:#fff"><span>7:48</span><span class="ic">▮▮▮ <span class="bat"></span></span></div>
+        <div class="body" style="justify-content:center;gap:18px;color:#fff;padding:0 24px">
+          <div style="text-align:center;margin-bottom:6px">
+            <div style="width:62px;height:62px;border-radius:19px;background:rgba(255,255,255,.17);
+                        margin:0 auto 13px;display:grid;place-items:center;font-size:1.7rem">👥</div>
+            <div style="font-size:1.25rem;font-weight:700;letter-spacing:-.01em">HRMS</div>
+            <div style="font-size:.76rem;opacity:.82;margin-top:2px">Fintech · Staff app</div>
+          </div>
+          <div style="background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+                      border-radius:11px;padding:11px 13px">
+            <div style="font-size:.6rem;opacity:.8;text-transform:uppercase;letter-spacing:.07em">Employee code</div>
+            <div style="font-size:.86rem;font-weight:600;margin-top:2px">EMP-0001</div></div>
+          <div style="background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+                      border-radius:11px;padding:11px 13px">
+            <div style="font-size:.6rem;opacity:.8;text-transform:uppercase;letter-spacing:.07em">Password</div>
+            <div style="font-size:.86rem;font-weight:600;margin-top:2px;letter-spacing:.17em">••••••••</div></div>
+          <button class="btn" style="background:#fff;color:var(--brand)">Sign in</button>
+          <div style="text-align:center;font-size:.72rem;opacity:.82">or</div>
+          <button class="btn" style="background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.3)">
+            Sign in with fingerprint</button>
+          <div style="text-align:center;font-size:.68rem;opacity:.7;margin-top:2px">
+            ភាសាខ្មែរ · English</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Sign in</b><span>Employee code rather than email — most staff do not have
+        a work email. Fingerprint after the first sign-in, and the language switch is on this
+        screen, not buried in settings.</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<section id="map">
+  <h2><span class="n">05</span> The screen map</h2>
+  <p class="lede">Twenty-two screens behind five tabs. Everything a member of staff can reach in
+     at most two taps from opening the app.</p>
+
+  <div class="note" style="border-left-color:var(--ok);background:linear-gradient(100deg,rgba(16,185,129,.16),rgba(34,211,238,.07))">
+    <b style="color:#ffffff">Three ways to clock in, on purpose.</b> No single method works
+    everywhere. <b>GPS</b> drifts indoors and in a concrete branch can put someone across the
+    street. <b>QR</b> needs the code on the wall but is exact, and rotating it every minute
+    means a photographed code is worthless. <b>Face ID</b> needs nothing on the wall at all
+    and is the only one that proves it was <em>that person</em> rather than their phone —
+    which is the thing a clock-in is actually claiming. Offer all three and let each branch
+    use what suits it.
+  </div>
+
+  <table>
+    <thead><tr><th style="width:13%">Tab</th><th style="width:24%">Screen</th><th>What it is for</th><th style="width:12%">Who sees it</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3"><b>Home</b></td><td>Home / Today</td><td>Clock state, four quick actions, today's birthdays and the next holiday</td><td>Everyone</td></tr>
+      <tr><td>Home &#183; Operation</td><td>Same tab switched to Team: roll call and what needs you</td><td>Managers</td></tr>
+      <tr><td>Noticeboard</td><td>Announcements, pinned and urgent first</td><td>Everyone</td></tr>
+
+      <tr><td rowspan="8"><b>Time</b></td><td>Clock in — Tap</td><td>One tap, with location and lateness shown before you commit</td><td>Everyone</td></tr>
+      <tr><td>Clock in — Scan QR</td><td>Camera on the rotating code at the entrance</td><td>Everyone</td></tr>
+      <tr><td>Clock in — Face ID</td><td>Matched to the staff photo, with a blink for liveness</td><td>Everyone</td></tr>
+      <tr><td>Clocked in</td><td>Confirmation naming the time, branch and method used</td><td>Everyone</td></tr>
+      <tr><td>My badge</td><td>Your own rotating QR, for a guard with a scanner</td><td>Everyone</td></tr>
+      <tr><td>My attendance</td><td>The month as a calendar, then day detail</td><td>Everyone</td></tr>
+      <tr><td>Public holidays</td><td>Next one with a countdown, then the whole year</td><td>Everyone</td></tr>
+      <tr><td>Attendance &#183; Operation</td><td>Same tab switched to Team: who is in, late, on leave, not scanned</td><td>Managers</td></tr>
+
+      <tr><td rowspan="4"><b>Board</b></td><td>Early birds</td><td>Public ranking by average clock-in time</td><td>Everyone</td></tr>
+      <tr><td>Most hours worked</td><td>Total hours and overtime, with an over-limit warning</td><td>Everyone</td></tr>
+      <tr><td>My punctuality</td><td>Your own lateness, privately, and the route to an excuse</td><td>You + your manager</td></tr>
+      <tr><td>Birthdays</td><td>Today, this month, and work anniversaries</td><td>Everyone</td></tr>
+
+      <tr><td rowspan="4"><b>Requests</b></td><td>Leave</td><td>Balance, history, and where each request is sitting</td><td>Everyone</td></tr>
+      <tr><td>New request</td><td>Leave, overtime, late excuse, asset — one form shape</td><td>Everyone</td></tr>
+      <tr><td>Payslip</td><td>Net pay first, then the breakdown</td><td>Everyone</td></tr>
+      <tr><td>Requests &#183; Operation</td><td>Same tab switched to Team: approve or reject from the list</td><td>Managers</td></tr>
+
+      <tr><td rowspan="3"><b>Me</b></td><td>Profile</td><td>Contract, training, certificates, assets, family</td><td>Everyone</td></tr>
+      <tr><td>Recognition</td><td>Points, awards received, and giving one</td><td>Everyone</td></tr>
+      <tr><td>Me &#183; mode dropdown</td><td>Where Staff / Operation is chosen for the whole app</td><td>Managers</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>What is deliberately not here.</b> No chat — people already have one. No document upload
+    on a phone. No payroll run, no approving a payroll, no editing anyone's record: those are
+    desk jobs with consequences, and they belong on the web app where there is room to see
+    what you are doing.
+  </div>
+</section>
+
+</div>
+
+<footer><div class="wrap">Screen design only — no data wiring. Twenty-two screens, five tabs,
+  two roles. Names shown are from the test data.</div></footer>
+
+<script>
+/* Draws a QR-looking block pattern — finder squares in three corners, timing
+   rows, and a deterministic fill from the seed so the picture is stable between
+   reloads. It is a mockup: it carries no real payload and will not scan. */
+(function () {
+  const N = 29;
+  const finder = (g, x, y) => {
+    const r = (a, b, w, h, fill) =>
+      g.push(`<rect x="${x + a}" y="${y + b}" width="${w}" height="${h}" fill="${fill}"/>`);
+    r(0, 0, 7, 7, "#000"); r(1, 1, 5, 5, "#fff"); r(2, 2, 3, 3, "#000");
+  };
+  for (const el of document.querySelectorAll("svg.qr")) {
+    const seed = el.dataset.qr || "HRMS";
+    let h = 2166136261;
+    for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+    const rnd = () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 4294967296;
+
+    const g = [`<rect width="${N}" height="${N}" fill="#fff"/>`];
+    const taken = (x, y) =>
+      (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9) ||  // finders
+      (x > N - 11 && x < N - 4 && y > N - 11 && y < N - 4) ||              // alignment
+      x === 6 || y === 6;                                                  // timing
+
+    for (let y = 0; y < N; y++)
+      for (let x = 0; x < N; x++)
+        if (!taken(x, y) && rnd() > 0.52)
+          g.push(`<rect x="${x}" y="${y}" width="1" height="1" fill="#000"/>`);
+
+    for (let i = 8; i < N - 8; i++) {
+      if (i % 2 === 0) { g.push(`<rect x="${i}" y="6" width="1" height="1" fill="#000"/>`);
+                         g.push(`<rect x="6" y="${i}" width="1" height="1" fill="#000"/>`); }
+    }
+    finder(g, 0, 0); finder(g, N - 7, 0); finder(g, 0, N - 7);
+    g.push(`<rect x="${N - 9}" y="${N - 9}" width="5" height="5" fill="#000"/>`);
+    g.push(`<rect x="${N - 8}" y="${N - 8}" width="3" height="3" fill="#fff"/>`);
+    g.push(`<rect x="${N - 7}" y="${N - 7}" width="1" height="1" fill="#000"/>`);
+    el.innerHTML = g.join("");
+  }
+})();
+</script>
+</body>
+</html>
